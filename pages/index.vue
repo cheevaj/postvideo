@@ -421,6 +421,8 @@
 import viewIndexBar from './viewChartBar'
 import viewIndexDoughnut from './viewChartDouhnut'
 export default {
+  middleware: 'auth',
+  Currency: 'DefaultLayout',
   name: 'IndexPage',
   components: {
     viewIndexBar,

@@ -3,7 +3,7 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   head: {
     titleTemplate: '%s Video',
-    title: 'Post',
+    title: 'Admin',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -33,11 +33,50 @@ export default {
     '@nuxtjs/proxy',
     '@nuxtjs/pwa',
     '@nuxtjs/google-fonts',
+    '@nuxtjs/auth-next'
   ],
+  auth: {
+    store: '~/store',
+    redirect: {
+      login: '/login',
+      home: '/',
+    },
+    strategies: {
+      local: {
+        token: {
+          property: 'user.token',
+          global: true,
+          name: 'authorization',
+          type: '',
+        },
+        user: {
+          property: 'user',
+        },
+        endpoints: {
+          login: {
+            url: 'http://172.28.17.102:3600/users/loginwithurl',
+            method: 'post',
+          },
+          logout: {
+            url: 'http://172.28.17.102:3600/users/logout',
+            method: 'delete',
+          },
+          user: { url: 'http://172.28.17.102:3600/users/me', method: 'get' },
+        },
+      },
+    },
+  },
+  proxy: {
+    '/users/': {
+      target: 'http://172.28.17.102:3600',
+      pathRewrite: { '^/users/': '/users/' },
+      changeOrigin: true,
+      secure: false,
+    },
+  },
 
   axios: {
-    baseURL: '/',
-    // You can also add a timeout or other settings here
+    baseURL: 'http://172.28.17.102:3600'
   },
   pwa: {
     manifest: {

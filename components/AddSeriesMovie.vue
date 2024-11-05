@@ -4,16 +4,27 @@
     <br />
     <v-card-text v-if="e1 === 1" class="px-4 pb-0">
       <h3 class="px-3 custom-font">{{ form.title }}</h3>
+      <v-card flat class="mx-3 my-4">
+        <v-img
+          width="100%"
+          height="250px"
+          :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
+            form.image || ''
+          }`"
+        />
+      </v-card>
     </v-card-text>
     <v-card-text class="px-0 py-0" style="padding: 12px">
       <v-stepper
-        v-model="e1"
-        flat
-        class="px-4 py-0"
-        style="background-color: transparent"
+      v-model="e1"
+      flat
+      class="px-4 py-0"
+      style="background-color: transparent"
       >
-        <v-stepper-items class="pa-0">
+      <v-stepper-items class="pa-0">
+          <br />
           <v-stepper-content step="1" class="pa-0">
+            <h3 class="custom-font px-3">ຕອນຂອງຊີລີ່:</h3>
             <v-card outlined class="pa-2 custom-margin" min-height="180px">
               <v-card-text class="pa-2">
                 <v-row>
@@ -31,45 +42,33 @@
                       @click="nextStep(3, items)"
                     >
                       <v-img
-                        src="https://png.pngtree.com/thumb_back/fw800/background/20240515/pngtree-background-beautiful-h5-wallpaper-imag-image_15785576.jpg"
                         width="100%"
                         height="100%"
-                        class="text-right"
+                        class="text-center"
+                        :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
+                          items.img || ''
+                        }`"
+                        style="
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                        "
                       >
-                      <!-- <v-img
-                                  width="100%"
-                                  height="100%"
-                                  class="text-center"
-                                  :src="item_video.image"
-                                  style="
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                  "
-                                >
-                                  <v-icon
-                                    size="32"
-                                    color="#ffcc00"
-                                    style="background-color: rgba(13, 13, 13, 0.8); border-radius: 50%; padding: 0px;"
-                                    >
-                                    {{ index % 2 ? 'mdi-play' : 'mdi-download' }}
-                                  </v-icon> 
-                                  <span
-                                    class="pr-2"
-                                    style="
-                                      position: absolute;
-                                      right: 2px;
-                                      bottom: 2px;
-                                      color: #fff;
-                                    "
-                                  >
-                                    {{ item_video.time }}
-                                  </span>-->
-                        <!-- <div @click="updateSeries(items)">
-                          <v-icon class="custom-btn hover-pointer update-btn" style="border-bottom-left-radius: 4px;"
-                            >mdi-dots-vertical</v-icon
-                          >
-                        </div> -->
+                        <v-icon
+                          size="32"
+                          color="#ffcc00"
+                          style="
+                            background-color: rgba(13, 13, 13, 0.8);
+                            border-radius: 50%;
+                            padding: 0px;
+                          "
+                        >
+                          {{
+                            items.VideoSeriesQualityInfo.length > 0
+                              ? 'mdi-play'
+                              : 'mdi-download'
+                          }}
+                        </v-icon>
                         <v-card
                           flat
                           class="text-center px-2"
@@ -226,9 +225,7 @@
               </h2>
               <v-card outlined class="pa-2 custom-margin" min-height="120px">
                 <v-card-text class="pa-0">
-                  <div
-                    v-html="epSVideoId.description"
-                  ></div>
+                  <div v-html="epSVideoId.description"></div>
                 </v-card-text>
               </v-card>
               <br /><br />
@@ -429,12 +426,23 @@ export default {
     //   console.log('update-Ep.',item);
     // },
     nextStep(value, SVideoId) {
-      this.e1 = this.e1 === 3 ? 1 : value
-      this.epSVideoId = SVideoId === 0 ? {} : SVideoId
+      if(value === 3){
+        if(SVideoId.VideoSeriesQualityInfo.length > 0){
+          this.messageModal('success');
+        }
+        else {
+          this.e1 = this.e1 === 3 ? 1 : value
+          this.epSVideoId = SVideoId === 0 ? {} : SVideoId
+        }
+      }
+      else {
+        this.e1 = this.e1 === 3 ? 1 : value
+        this.epSVideoId = SVideoId === 0 ? {} : SVideoId
+      }
       console.log('SrID:', this.epSVideoId)
     },
     async getData() {
-      console.log('Video ID', this.form.id)
+      // console.log('Video ID', this.form)
       const id = this.form.id
       const apiCalls = [
         this.$axios.post('http://172.28.17.102:2024/video/getallvideoquality'),
@@ -487,7 +495,7 @@ export default {
         reduced: 0,
         category: [],
       }
-      this.$store.commit('SET_FORM', updatedForm);
+      this.$store.commit('SET_FORM', updatedForm)
     },
     async addVideoSeries() {
       const { image, video, resolution } = this.newForm
@@ -520,8 +528,8 @@ export default {
         )
         console.log('Data response:', response)
         this.messageModal('success')
-        this.$store.commit('SET_STEP_ADD_VIDEO', 0);
-        // this.resetValue(); 
+        this.$store.commit('SET_STEP_ADD_VIDEO', 0)
+        // this.resetValue();
       } catch (error) {
         console.error(
           'Error fetching data:',
@@ -555,8 +563,8 @@ export default {
           }
         )
         console.log('Data response Series:', response)
-        this.messageModal('success');
-        this.resetValue();
+        this.messageModal('success')
+        this.resetValue()
       } catch (error) {
         console.error(
           'Error fetching data:',
@@ -688,11 +696,11 @@ export default {
 }
 .update-btn {
   background-color: transparent;
-  color: #FFFF;
+  color: #ffff;
 }
 .update-btn:hover {
   background-color: rgb(255, 215, 0);
-  color: #FFFF;
+  color: #ffff;
 }
 .custom-btn:hover {
   outline: 0px solid black;

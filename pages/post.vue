@@ -307,7 +307,7 @@
                                       })
                                     "
                                   >
-                                    <div v-html="item_video.description"></div>
+                                  <div v-html="truncatedDescription(item_video.description)"></div>
                                   </span>
                                 </v-card-text>
                               </v-card>
@@ -403,8 +403,8 @@
                 class="pa-0"
                 style="position: absolute; bottom: 18px; right: 25px"
               >
-                <ShowPage :total="25" @updatePage="handlePageUpdate" />
-                <v-icon class="custom-button" size="32">mdi-plus</v-icon>
+                <ShowPage :total="NumberPage" @updatePage="handlePageUpdate" />
+                <v-icon outlined class="custom-button" size="32" @click="() => { NumberPage <= 125 ? NumberPage += 5 : NumberPage }">mdi-plus</v-icon>
               </v-card-actions>
             </div>
           </v-card>
@@ -416,11 +416,14 @@
 
 <script>
 export default {
+  middleware: 'auth',
+  Currency: 'DefaultLayout',
   name: 'IndexPage',
   data() {
     return {
       currentPage: 1,
       tabItem: 0,
+      NumberPage:25,
       modal: false,
       modalactive: false,
       select: false,
@@ -454,10 +457,16 @@ export default {
       return this.tabs.filter((item) => item.languageId === '1002')
     },
     paginatedVideos() {
-    const endIndex = this.currentPage * 5;
-    const startIndex = endIndex - 5;
-    return this.video[this.tabItem]?.videos?.videoData.slice(startIndex, endIndex) || [];
-  },
+      const endIndex = (this.currentPage * 5);
+      const startIndex = endIndex - 5;
+      // console.log('Start:',startIndex ,'End:',endIndex);
+      return this.video[this.tabItem]?.videos?.videoData.slice(startIndex, endIndex) || [];
+    },
+    truncatedDescription() {
+      return (description) => description.length > 25 
+        ? `${description.slice(0, 25)}...` 
+        : description;
+    }
   },
   mounted() {
     this.filterMoviesByType()
@@ -532,21 +541,26 @@ export default {
         this.modal = true
         this.rightDrawer = false
       } else if (menu === 9) {
-        this.handleMenuItemClick(
-          active,
-          id,
-          title,
-          image,
-          des,
-          price,
-          type,
-          bkimage,
-          video,
-          time,
-          resolution
-        )
-        this.select = true
-        this.rightDrawer = false
+        if(menu === 9){
+          return this.messageModal('error', 'ຍັງບໍ່ສາມາດເບີ່ງວີດີໂອໄດ້.');
+        }
+        else {
+          this.handleMenuItemClick(
+            active,
+            id,
+            title,
+            image,
+            des,
+            price,
+            type,
+            bkimage,
+            video,
+            time,
+            resolution
+          )
+          this.select = true
+          this.rightDrawer = false
+        }
       } else {
         this.closePost()
       }
@@ -595,11 +609,11 @@ export default {
     deleteVideo(id) {
       // console.log(id)
       this.modal = false
-      id === '54984' ? this.messageModal('success') : this.messageModal('error')
+      id === '54984' ? this.messageModal('success' ,false) : this.messageModal('error', false)
     },
     activeVideo(id) {
       this.modal = false
-      id === '1234' ? this.messageModal('success') : this.messageModal('error')
+      id === '1234' ? this.messageModal('success' ,false) : this.messageModal('error', false)
     },
     handlePageUpdate(page) {
       this.currentPage = page
@@ -639,17 +653,21 @@ export default {
         console.error('Error fetching videos by type:', error)
       }
     },
-    messageModal(type) {
+    messageModal(type, value) {
+      const getMessageContent = () => {
+        const successMessage = this.modalactive ? 'ປິດວີດີໂອສໍາເລັດ.' : 'ລົບວີດີໂອສໍາເລັດ.';
+        const errorMessage = this.modalactive ? 'ປິດວີດີໂອບໍ່ສໍາເລັດ.' : 'ລົບວີດີໂອບໍ່ສໍາເລັດ.';
+        
+        if (type === 'success') {
+          return value || successMessage;
+        } else {
+          return value || errorMessage;
+        }
+      };
       this.$Message[type]({
         background: true,
-        content: this.modalactive
-          ? `<span class="custom-font">${
-              type === 'success' ? 'ປິດວີດີໂອສໍາເລັດ.' : 'ປິດວີດີໂອບໍ່ສໍາເລັດ.'
-            }`
-          : `<span class="custom-font">${
-              type === 'success' ? 'ລົບວີດີໂອສໍາເລັດ.' : 'ລົບວີດີໂອບໍ່ສໍາເລັດ.'
-            }`,
-      })
+        content: `<span class="custom-font">${getMessageContent()}</span>`,
+      });
     },
   },
 }

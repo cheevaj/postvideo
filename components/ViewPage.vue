@@ -5,7 +5,9 @@
         <v-col class="pa-0">
           <v-card-text height="480" class="pa-0">
             <video
-              :src="form.video"
+              :src="`https://apicenter.laotel.com:9443/tplussocial/VideoStreaming?v=${
+                form.video[0].thumbnail || ''
+              }`"
               controls
               style="width: 100%; height: 540px"
             ></video>
@@ -205,9 +207,22 @@ export default {
       return this.$store.state.form
     },
   },
-  mounted() {},
+  mounted() {
+    this.getData()
+  },
   methods: {
-    handleMenuItemClick( active, id, title, image, des, price, type, bkimage, video, time) {
+    handleMenuItemClick(
+      active,
+      id,
+      title,
+      image,
+      des,
+      price,
+      type,
+      bkimage,
+      video,
+      time
+    ) {
       const updatedForm = {
         id,
         title,
@@ -228,6 +243,9 @@ export default {
       this.$nextTick(() => {
         console.log('form::', this.$store.state.form)
       })
+    },
+    getData() {
+      console.log(this.form)
     },
   },
 }
