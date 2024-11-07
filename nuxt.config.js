@@ -1,39 +1,43 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
+  // server: {
+  //   port: 3335, // default: 3000
+  //   host: '172.28.17.102', // default: localhost
+  // },
+  ssr: false,
   head: {
     titleTemplate: '%s Video',
     title: 'Admin',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'Your app description here' },
+      {
+        hid: 'description',
+        name: 'description',
+        content: 'Your app description here',
+      },
       { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/Tpluslogo.png' }],
   },
 
-  css: [
-    'view-design/dist/styles/iview.css'
-  ],
+  css: ['view-design/dist/styles/iview.css'],
 
   plugins: [
     '~/plugins/iview.js',
     '~/plugins/chartjs.js',
-    { src: '~/plugins/vue-quill-editor.js', ssr: false }
+    { src: '~/plugins/vue-quill-editor.js', ssr: false },
   ],
   components: true,
-  buildModules: [
-    '@nuxtjs/eslint-module',
-    '@nuxtjs/vuetify',
-  ],
+  buildModules: ['@nuxtjs/eslint-module', '@nuxtjs/vuetify'],
 
   modules: [
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
     '@nuxtjs/pwa',
     '@nuxtjs/google-fonts',
-    '@nuxtjs/auth-next'
+    '@nuxtjs/auth-next',
   ],
   auth: {
     store: '~/store',
@@ -54,14 +58,17 @@ export default {
         },
         endpoints: {
           login: {
-            url: 'http://172.28.17.102:3600/users/loginwithurl',
+            url: 'http://172.28.26.23:3100/users/loginAdminVideo',
             method: 'post',
           },
           logout: {
             url: 'http://172.28.17.102:3600/users/logout',
             method: 'delete',
           },
-          user: { url: 'http://172.28.17.102:3600/users/me', method: 'get' },
+          user: {
+            url: 'http://172.28.26.23:3100/users/marketdetail',
+            method: 'get',
+          },
         },
       },
     },
@@ -76,7 +83,7 @@ export default {
   },
 
   axios: {
-    baseURL: 'http://172.28.17.102:3600'
+    baseURL: 'http://172.28.17.102:3600',
   },
   pwa: {
     manifest: {

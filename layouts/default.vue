@@ -72,7 +72,7 @@ export default {
   },
   computed: {
     token() {
-      if (this.$route.path === '/login') {
+      if (this.$route.path === ('/login') || this.$route.path === ('/loginex')) {
         return false
       } else {
         return true

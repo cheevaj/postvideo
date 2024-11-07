@@ -16,7 +16,7 @@
             max-width="380px"
             :class="{ shaking: !active }"
             style="
-              background-color: rgba(255, 255, 255, 0.6);
+              background-color: rgb(255, 224, 0);
               border: 1.5px solid #ffcc00;
               border-radius: 20px;
               margin: 0 auto;
@@ -24,18 +24,19 @@
               box-shadow: 20px 10px 20px rgba(0, 0, 0, 0.5);
             "
           >
-            <v-card-actions class="back-BK">
-              <v-avatar class="my-2 pa-4" size="90">
+            <v-card-actions class="back-BK py-0 pr-0" style="position: relative;">
+              <v-avatar class="my-0 pa-4" size="90">
                 <img src="~/static/Tpluslogo.png" alt="John" />
               </v-avatar>
-              <v-spacer />
-              <v-card-text style="margin-right: 90px">
-                <h2 class="text-center custom-font">ເຂົ້າສູ່ລະບົບ</h2>
-              </v-card-text>
-              <v-spacer />
+              <div class="pa-0" style="position: relative; display: inline-block; height: 100px; width: 280px; border-top-right-radius: 20px; overflow: hidden;">
+                <img src="~/static/line-yellow-and-black.jpg" alt="John" style="height: 100%; width: 100%; border-top-right-radius: 20px;">
+                <h2 class="text-center custom-font" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; color: #ffff;">
+                  ເຂົ້າສູ່ລະບົບ
+                </h2>
+              </div>
             </v-card-actions>
             <v-divider></v-divider>
-            <v-card-actions class="yellow-BK">
+            <v-card-actions style="background-color: transparent; color: #000;">
               <v-form
                 @submit.prevent="checkrequired"
                 style="border-radius: 20px"
@@ -47,7 +48,7 @@
                   <v-row>
                     <v-col cols="12">
                       <v-card-actions class="pa-0">
-                        <v-card outlined class="shadow-card-login" style="height: 45px; width: 45px; border-radius: 50%; padding-top: 4px;">
+                        <v-card outlined style="height: 45px; width: 45px; border-radius: 50%; padding-top: 4px; background-color: rgb(242, 242, 242);">
                           <v-icon size="34">mdi-account-tie</v-icon>
                         </v-card>
                         &nbsp;&nbsp;
@@ -57,7 +58,7 @@
                           v-model="email"
                           placeholder="ກະລຸນາປ້ອມຊື່"
                           :rules="[rules.required]"
-                          :label="'ຊື່ຜູ້ໃຊ້ ຫຼື ອີເມວ'"
+                          :label="'ຊື່ຜູ້ໃຊ້ (ສະເພາະເອັດມິນ)'"
                           :label-color="'#000'"
                           style="color: #000;"
                           @keydown.enter="checkrequired"
@@ -67,7 +68,7 @@
                     <v-col cols="12" class="py-0">
                       <br />
                       <v-card-actions class="pa-0">
-                        <v-card outlined class="shadow-card-login" style="height: 45px; width: 45px; border-radius: 50%; padding-top: 4px;">
+                        <v-card outlined style="height: 45px; width: 45px; border-radius: 50%; padding-top: 4px; background-color: rgb(242, 242, 242);">
                           <v-icon size="34">{{
                             !showpassword
                             ? 'mdi-lock-open'
@@ -162,6 +163,7 @@ export default {
       }
     },
     async checkrequired() {
+      console.log(this.email, this.password)
       try {
         const response = await this.$auth.loginWith('local', {
           data: {
@@ -222,27 +224,22 @@ export default {
   background-color: #000;
   color: #ffff00;
 }
-.yellow-BK {
-  background-color: rgb(255,235,0);
-  color: #000;
-}
 .hovered {
   background-color: rgba(255, 255, 255, 0.8);
   border-color: rgb(255, 255, 0);
 }
 .shadow-card-login {
   height: 45px;
-  border-radius: 6px;
+  border-radius: 16px;
   background-color: #fff !important;
   box-shadow: inset 2px 4px 4px 2px rgba(0, 0, 0, 0.5) !important;
   outline: 0px solid #f2f2f2 !important;
 }
 .shadow-card-login .v-input__control .v-input__slot {
   background-color: #fff !important;
-  border-radius: 6px;
+  border-radius: 16px;
   box-shadow: inset 0px 4px 4px 2px rgba(0, 0, 0, 0.5) !important;
 }
-
 .shaking {
   animation: shake 0.1s ease-in-out infinite alternate;
 }
