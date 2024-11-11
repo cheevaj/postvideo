@@ -1,7 +1,17 @@
 <template>
   <div>
     <br />
-    <v-card-text class="px-2">
+    
+     <v-card-text class="px-2 text-center">
+      <div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <h2 style="color: #b3b3b3;">Not data</h2>
+      </div>
+    <!--  <v-btn @click="fetchData">reset</v-btn>
       <v-card-text class="px-0 pt-2 pb-0">
         <v-card
           flat
@@ -38,15 +48,19 @@
             Data
           </v-card>
         </v-card>
-      </v-card-text>
-    </v-card-text>
+      </v-card-text> -->
+    </v-card-text> 
   </div>
 </template>
-<script>
+<!-- <script>
 import Chart from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 export default {
   name: 'PostPage',
+  props: {
+    video: Array,
+    type: Array,
+  },
   data() {
     return {
       colorBK: [
@@ -144,8 +158,13 @@ export default {
   mounted() {
     this.initializeData()
     this.createChart()
+    this.fetchData()
   },
   methods: {
+    fetchData() {
+      console.log('view-video:', this.video)
+      console.log('view-type:', this.type)
+    },
     rowClassName(row, index) {
       if (index % 2 === 0) {
         return 'even-row'
@@ -248,4 +267,4 @@ export default {
   background-color: transparent; 
 }
 
-</style>
+</style> -->

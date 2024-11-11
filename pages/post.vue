@@ -439,9 +439,9 @@ export default {
       tabs: [],
       menu: [false, false, false],
       itemsMenu: [
-        { title: 'ລາຍລະອຽດ', icon: 'mdi-book-open-page-variant' },
+        { title: 'ລາຍລະອຽດ', icon: 'mdi-movie-open-plus' },
         { title: 'ເເກ້ໄຂ', icon: 'mdi-movie-edit' },
-        { title: 'ປິດຂາຍ', icon: 'mdi-altimeter' },
+        { title: 'ປິດຂາຍ', icon: 'mdi-movie-off' },
         { title: 'ລົບວີດີໂອ', icon: 'mdi-delete' },
         // { title: 'ເພີ່ມວີດີໂອ', icon: 'mdi-movie-open-plus' },
       ],
@@ -459,7 +459,7 @@ export default {
     paginatedVideos() {
       const endIndex = (this.currentPage * 5);
       const startIndex = endIndex - 5;
-      // console.log('Start:',startIndex ,'End:',endIndex);
+      console.log('Start:',startIndex ,'End:',endIndex);
       return this.video[this.tabItem]?.videos?.videoData.slice(startIndex, endIndex) || [];
     },
     truncatedDescription() {
@@ -607,7 +607,6 @@ export default {
       this.$store.commit('SET_ACTIVE_VIDEO', updatedActive)
     },
     deleteVideo(id) {
-      // console.log(id)
       this.modal = false
       id === '54984' ? this.messageModal('success' ,false) : this.messageModal('error', false)
     },
@@ -618,9 +617,8 @@ export default {
     handlePageUpdate(page) {
       this.currentPage = page
       this.pageVideo.forEach((item) => {
-        item.limit = 5 * page;
+        item.limit = (5 * page);
       })
-      console.log('data-video:', this.pageVideo)
       this.handleSearch()
     },
     async filterMoviesByType() {
@@ -629,10 +627,9 @@ export default {
           'http://172.28.17.102:2024/video/getallvideotype'
         )
         this.tabs = response.data.detail || []
-        // console.log('Video types:', this.tabs)
         this.pageVideo = this.filteredType.map((item) => ({
           typeId: item.typeId,
-          limit: 10,
+          limit: 5,
         }))
         await this.handleSearch()
       } catch (error) {
@@ -640,6 +637,7 @@ export default {
       }
     },
     async handleSearch() {
+      console.log('f',this.pageVideo)
       try {
         const response = await this.$axios.post(
           'http://172.28.17.102:2024/video/getAllVideoWithFileVideoFromType',

@@ -6,6 +6,7 @@
         :mini-variant="miniVariant"
         clipped
         fixed
+        width="200"
         app
       >
         <v-list>
@@ -39,7 +40,7 @@
         </v-avatar>
       </div>
       <v-spacer></v-spacer>
-      <v-btn text style="background-color: transparent" color="transparent" @click="logOut">
+      <v-btn v-if="fname !== '' || token" text style="background-color: transparent" color="transparent" @click="logOut">
         <v-icon color="#000">mdi-location-exit</v-icon>
       </v-btn>
     </v-app-bar>

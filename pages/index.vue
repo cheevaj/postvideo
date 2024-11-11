@@ -1,3 +1,333 @@
+<style scoped>
+.custom-arrow {
+  height: 40px;
+  width: 40px;
+  border-radius: 0px;
+  border: 0px solid #fff;
+  color: black;
+  background-color: transparent;
+  padding: 0px;
+}
+.custom-arrow:hover {
+  background-color: rgb(255, 215, 0);
+  color: #fff;
+}
+.table-container ::-webkit-scrollbar {
+  width: 4px;
+  height: 2px;
+}
+
+.table-container ::-webkit-scrollbar-thumb {
+  background-color: rgb(255, 215, 0);
+  border-radius: 4px;
+}
+
+.table-container ::-webkit-scrollbar-corner {
+  background-color: #ffff00;
+  border-radius: 4px;
+}
+.custom-font {
+  font-family: 'Noto Sans Lao', sans-serif;
+}
+
+.shadow-card {
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.custom-card:hover {
+  cursor: not-allowed;
+}
+.shadow-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+.hover-pointer {
+  cursor: pointer;
+  background-color: none;
+}
+.custom-link {
+  border-radius: 14px;
+  background-color: rgb(255, 255, 255);
+}
+.BK-color {
+  background-color: rgb(255, 215, 0);
+}
+.color-hover {
+  color: none;
+}
+.color-hover:hover {
+  color: rgb(255, 215, 0);
+}
+
+.custom-video:hover {
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+</style>
+
+<script>
+import Chart from 'chart.js'
+import viewIndexBar from './viewChartBar'
+import viewIndexDoughnut from './viewChartDouhnut'
+export default {
+  middleware: 'auth',
+  Currency: 'DefaultLayout',
+  name: 'IndexPage',
+  components: {
+    viewIndexBar,
+    viewIndexDoughnut,
+  },
+  data() {
+    return {
+      addTypeVideo: false,
+      allvideo: false,
+      value: '',
+      page: '',
+      modalVideo: false,
+      modalSell: false,
+      modalTyple: false,
+      select: false,
+      right: true,
+      itemsType: [],
+      video: [],
+      pageVideo: [],
+
+      data: [
+        { name: 'tonny', value: 73 },
+        { name: 'janny', value: 54 },
+        { name: 'janson', value: 42 },
+        { name: 'aly', value: 23 },
+      ],
+      myChartBar: null,
+    }
+  },
+  mounted() {
+    this.dataResponseAll()
+    this.createChart()
+  },
+  computed: {
+    active() {
+      return this.$store.state.active
+    },
+    filteredType() {
+      return this.itemsType.filter((item) => item.languageId === '1002')
+    },
+    totalVideoCount() {
+      return this.video.reduce((total, item) => {
+        return (
+          total + (item.videos.videoData ? item.videos.videoData.length : 0)
+        )
+      }, 0)
+    },
+    viewVideoCount() {
+      return this.video.reduce((total, item) => {
+        if (item.videos && Array.isArray(item.videos.videoData)) {
+          return (
+            total +
+            item.videos.videoData.reduce((sum, video) => {
+              return sum + (video.views || 0)
+            }, 0)
+          )
+        }
+        return total
+      }, 0)
+    },
+  },
+  methods: {
+    async handleSearch() {
+      try {
+        const response = await this.$axios.post(
+          'http://172.28.17.102:2024/video/getAllVideoWithFileVideoFromType',
+          {
+            typeLimits: this.pageVideo,
+          }
+        )
+        this.video = response.data.detail?.data || []
+        // console.log('Fetched videos:', this.video, this.totalVideoCount)
+        this.createChart()
+      } catch (error) {
+        console.error('Error fetching videos by type:', error)
+      }
+    },
+    async dataResponseAll() {
+      try {
+        const response = await this.$axios.post(
+          'http://172.28.17.102:2024/video/getallvideotype'
+        )
+        this.itemsType = response.data.detail || []
+        this.pageVideo = this.filteredType.map((item) => ({
+          typeId: item.typeId,
+          limit: 100,
+        }))
+        await this.handleSearch()
+      } catch (error) {
+        console.error('Error fetching video types:', error)
+      }
+    },
+    isShowType() {
+      this.addTypeVideo = !this.addTypeVideo
+      this.modalTyple = false
+    },
+    handleMenuItemClick(
+      active,
+      id,
+      title,
+      image,
+      des,
+      price,
+      type,
+      bkimage,
+      video,
+      time
+    ) {
+      const updatedForm = {
+        id,
+        title,
+        time,
+        image,
+        des,
+        price,
+        type,
+        bkimage,
+        video,
+      }
+      const updatedActive = active
+      this.$store.commit('SET_FORM', updatedForm)
+      this.$store.commit('SET_ACTIVE', updatedActive)
+      this.$store.commit('SET_ACTIVE_IMG', updatedActive)
+      this.$store.commit('SET_ACTIVE_BKIMG', updatedActive)
+      this.$store.commit('SET_ACTIVE_VIDEO', updatedActive)
+      // this.$nextTick(() => {
+      //   console.log('form::', this.$store.state.form);
+      // });
+      this.page = 'view'
+      this.select = true
+    },
+    viewMenu(page) {
+      this.page = page
+      this.select = true
+    },
+    closeSelect() {
+      this.select = false
+      this.page = ''
+    },
+    createChart() {
+      const ctx = document
+        .getElementById('myChartVideoDoughnut')
+        .getContext('2d')
+      const data = this.filteredType.map((typeItem) => {
+        const matchingVideo = this.video.find(
+          (videoItem) => videoItem.typeId === typeItem.typeId
+        )
+        return {
+          languageId: typeItem.languageId || '',
+          name: typeItem.name || '',
+          typeId: typeItem.typeId,
+          videoData: matchingVideo ? matchingVideo.videos.videoData : [],
+          value: matchingVideo ? matchingVideo.videos.videoData.length : 0,
+        }
+      })
+      console.log('hh', data)
+      if (this.myChartBar) {
+        this.myChartBar.destroy()
+      }
+      const colorBK = [
+        'rgba(0, 143, 251)',
+        'rgba(0, 227, 150)',
+        'rgba(254, 176, 25)',
+        'rgba(241, 82, 105)',
+        'rgba(114, 94, 182)',
+        'rgba(75, 192, 192)',
+        'rgba(153, 102, 255)',
+        'rgba(25, 159, 64)',
+        'rgba(254, 19, 64)',
+        'rgba(255, 99, 132)',
+        'rgba(54, 162, 235)',
+        'rgba(255, 206, 86)',
+        'rgba(75, 192, 192)',
+        'rgba(153, 102, 255)',
+        'rgba(25, 159, 64)',
+        'rgba(254, 19, 64)',
+        'rgba(54, 162, 235)',
+        'rgba(255, 206, 86)',
+        'rgba(75, 192, 192)',
+        'rgba(153, 102, 255)',
+        'rgba(25, 159, 64)',
+      ]
+      const colorBD = [
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+        'rgba(255, 255, 255)',
+      ]
+      const labels = data.map((item) => `${item.name}`)
+      const values = data.map((item) => item.value)
+      const chartData = {
+        labels,
+        datasets: [
+          {
+            label: 'User Values',
+            data: values,
+            backgroundColor: colorBK,
+            borderColor: colorBD,
+            borderWidth: 1,
+          },
+        ],
+      }
+      this.myChartBar = new Chart(ctx, {
+        type: 'doughnut',
+        data: chartData,
+        options: {
+          cutoutPercentage: 65,
+          legend: {
+            display: true,
+          },
+          tooltips: {
+            mode: 'index',
+            intersect: false,
+          },
+          animation: {
+            duration: 1,
+            onComplete: () => {
+              const chartInstance = this.myChartBar
+              const ctx = chartInstance.ctx
+              ctx.font = 'bold 14px Arial'
+              ctx.textAlign = 'center'
+              ctx.textBaseline = 'middle'
+              chartInstance.data.datasets.forEach((dataset, i) => {
+                const meta = chartInstance.getDatasetMeta(i)
+                meta.data.forEach((element, index) => {
+                  const data = dataset.data[index]
+                  if (data !== 0) {
+                    const { x, y } = element.tooltipPosition()
+                    ctx.fillText(data, x, y)
+                  }
+                })
+              })
+            },
+          },
+        },
+      })
+    },
+  },
+}
+</script>
 <template>
   <div style="background-color: rgb(235, 235, 235)">
     <v-overlay :value="addTypeVideo || modalSell || allvideo" />
@@ -67,10 +397,10 @@
             v-model="allvideo"
             scrollable
             max-width="670px"
-            style="max-width: 84vw;"
+            style="max-width: 84vw"
           >
-            <v-card style="height: 75vh; width: 84vw;">
-              <ViewVideo v-if="allvideo" />
+            <v-card style="height: 75vh; width: 84vw">
+              <ViewVideo v-if="allvideo" :video="video" :type="filteredType" />
             </v-card>
           </v-dialog>
           <v-card
@@ -87,7 +417,7 @@
                 <span class="custom-font">ວີດີໂອ ທັງໝົດ</span>
                 <br />
                 <br />
-                <h2 class="custom-font">12 ວີດີໂອ</h2>
+                <h2 class="custom-font">{{ totalVideoCount }} ວີດີໂອ</h2>
               </v-card>
               <v-spacer />
               <v-card
@@ -116,10 +446,10 @@
               style="border-radius: 15px; height: 110px"
             >
               <v-card flat height="95" width="100%" class="ml-1 px-4 py-2">
-                <span class="custom-font">ຂາຍ ວີດີໂອ</span>
+                <span class="custom-font">ວິວ ວີດີໂອ</span>
                 <br />
                 <br />
-                <h2 class="custom-font">1203 ວີດີໂອ</h2>
+                <h2 class="custom-font">{{ viewVideoCount }} ວິວ</h2>
               </v-card>
               <v-spacer />
               <div>
@@ -161,7 +491,7 @@
                 <span class="custom-font">ປະເພດ ວີດີໂອ</span>
                 <br />
                 <br />
-                <h2 class="custom-font">{{ itemsType.length }} ປະເພດ</h2>
+                <h2 class="custom-font">{{ filteredType.length }} ປະເພດ</h2>
               </v-card>
               <v-spacer />
               <div class="ml-1 px-4 py-2">
@@ -210,7 +540,7 @@
                   "
                 >
                   <div
-                    v-for="(item, index) in itemsType"
+                    v-for="(item, index) in filteredType"
                     :key="index"
                     :value="item"
                     style="max-height: 100%; padding: 2px"
@@ -247,9 +577,9 @@
             </template>
           </Modal>
         </v-col>
-        <v-col cols="6" class="py-1 pr-2">
+        <v-col cols="5" class="py-1 pr-2">
           <v-card
-            class="shadow-card"
+            class="shadow-card custom-font"
             style="
               border-radius: 15px;
               height: 280px;
@@ -262,10 +592,12 @@
             }"
             @click="viewMenu('chart-doughnut')"
           >
-            <ChartDoughnut />
+            <v-card-text class="pa-0">
+              <canvas id="myChartVideoDoughnut"></canvas>
+            </v-card-text>
           </v-card>
         </v-col>
-        <v-col cols="6" class="py-1 pl-2">
+        <v-col cols="7" class="py-1 pl-2">
           <v-card
             class="shadow-card"
             style="border-radius: 15px; height: 280px; color: transparent"
@@ -293,7 +625,7 @@
                     class="custom-video"
                     outlined
                     style="background-color: rgb(236, 236, 236)"
-                    @click="
+                  > <!--  @click="
                       handleMenuItemClick(
                         false,
                         items.id,
@@ -305,8 +637,7 @@
                         items.bkimage,
                         items.video
                       )
-                    "
-                  >
+                    "  -->
                     <v-card
                       flat
                       height="120"
@@ -417,236 +748,3 @@
     </v-dialog>
   </div>
 </template>
-<script>
-import viewIndexBar from './viewChartBar'
-import viewIndexDoughnut from './viewChartDouhnut'
-export default {
-  middleware: 'auth',
-  Currency: 'DefaultLayout',
-  name: 'IndexPage',
-  components: {
-    viewIndexBar,
-    viewIndexDoughnut,
-  },
-  data() {
-    return {
-      addTypeVideo: false,
-      allvideo: false,
-      value: '',
-      page: '',
-      modalVideo: false,
-      modalSell: false,
-      modalTyple: false,
-      select: false,
-      right: true,
-      itemsType:[],
-      video: [
-        {
-          id: '1234',
-          time: '2:34:06',
-          image: 'https://wallpaperaccess.com/full/1356284.jpg',
-          bkimage:
-            'https://tse2.mm.bing.net/th?id=OIP.CiVqxYA8I0CoSVZIYRmyXwHaEK&pid=Api&P=0&h=220',
-          video:
-            'https://www.youtube.com/watch?v=MB3JQQy_QLM&list=RDMB3JQQy_QLM&start_radio=1',
-          title: 'ภาพเคลื่อนไหว - TAIY AKARD Feat. OLA Blackeyes 「Official MV',
-          des: 'ເພງ: #ພາບເຄື່ອນໄຫວ ສິລະປີນ: ຕ່າຍ ອາກາດ & ໂອລ້າ ແບຣັກອາຍເນື້ອຮ້ອງ ທຳນອງ: ຕ່າຍ ອາກາດ',
-          price: 34000,
-          type: 'ກະຕຸນ',
-        },
-        {
-          id: '3456',
-          time: '1:04:23',
-          image:
-            'https://deep-image.ai/blog/content/images/size/w1600/2022/08/magic-g1db898374_1920.jpg',
-          bkimage:
-            'https://tse2.mm.bing.net/th?id=OIP.CiVqxYA8I0CoSVZIYRmyXwHaEK&pid=Api&P=0&h=220',
-          video:
-            'https://www.youtube.com/watch?v=MB3JQQy_QLM&list=RDMB3JQQy_QLM&start_radio=1',
-          title: 'ภาพเคลื่อนไหว - TAIY AKARD Feat. OLA Blackeyes 「Official MV',
-          price: 34000,
-          des: 'ເພງ: #ພາບເຄື່ອນໄຫວ ສິລະປີນ: ຕ່າຍ ອາກາດ & ໂອລ້າ ແບຣັກອາຍເນື້ອຮ້ອງ ທຳນອງ: ຕ່າຍ ອາກາດ',
-          type: 'ໜັງ',
-        },
-        {
-          id: '4567',
-          time: '2:04:23',
-          image:
-            'https://deep-image.ai/blog/content/images/size/w1600/2022/08/magic-g1db898374_1920.jpg',
-          bkimage:
-            'https://tse2.mm.bing.net/th?id=OIP.CiVqxYA8I0CoSVZIYRmyXwHaEK&pid=Api&P=0&h=220',
-          video:
-            'https://www.youtube.com/watch?v=MB3JQQy_QLM&list=RDMB3JQQy_QLM&start_radio=1',
-          title: 'ภาพเคลื่อนไหว - TAIY AKARD Feat. OLA Blackeyes 「Official MV',
-          price: 34000,
-          des: 'ເພງ: #ພາບເຄື່ອນໄຫວ ສິລະປີນ: ຕ່າຍ ອາກາດ & ໂອລ້າ ແບຣັກອາຍເນື້ອຮ້ອງ ທຳນອງ: ຕ່າຍ ອາກາດ',
-          type: 'ໜັງບູ້',
-        },
-        {
-          id: '1234',
-          time: '2:34:06',
-          image: 'https://wallpaperaccess.com/full/1356284.jpg',
-          bkimage:
-            'https://tse2.mm.bing.net/th?id=OIP.CiVqxYA8I0CoSVZIYRmyXwHaEK&pid=Api&P=0&h=220',
-          video:
-            'https://www.youtube.com/watch?v=MB3JQQy_QLM&list=RDMB3JQQy_QLM&start_radio=1',
-          title: 'ภาพเคลื่อนไหว - TAIY AKARD Feat. OLA Blackeyes 「Official MV',
-          des: 'ເພງ: #ພາບເຄື່ອນໄຫວ ສິລະປີນ: ຕ່າຍ ອາກາດ & ໂອລ້າ ແບຣັກອາຍເນື້ອຮ້ອງ ທຳນອງ: ຕ່າຍ ອາກາດ',
-          price: 34000,
-          type: 'ກະຕຸນ',
-        },
-        {
-          id: '3456',
-          time: '1:04:23',
-          image:
-            'https://deep-image.ai/blog/content/images/size/w1600/2022/08/magic-g1db898374_1920.jpg',
-          bkimage:
-            'https://tse2.mm.bing.net/th?id=OIP.CiVqxYA8I0CoSVZIYRmyXwHaEK&pid=Api&P=0&h=220',
-          video:
-            'https://www.youtube.com/watch?v=MB3JQQy_QLM&list=RDMB3JQQy_QLM&start_radio=1',
-          title: 'ภาพเคลื่อนไหว - TAIY AKARD Feat. OLA Blackeyes 「Official MV',
-          price: 34000,
-          des: 'ເພງ: #ພາບເຄື່ອນໄຫວ ສິລະປີນ: ຕ່າຍ ອາກາດ & ໂອລ້າ ແບຣັກອາຍເນື້ອຮ້ອງ ທຳນອງ: ຕ່າຍ ອາກາດ',
-          type: 'ໜັງ',
-        },
-      ],
-    }
-  },
-  mounted() {
-    this.dataResponseAll();
-  },
-  methods: {
-    async dataResponseAll() {
-      const apiCalls = [
-        this.$axios.post('http://172.28.17.102:2024/video/getallvideotype'),
-        this.$axios.post('http://172.28.17.102:2024/video/getallvideocategory'),
-      ];
-      try {
-        const responses = await Promise.all(apiCalls);
-        const [
-          videoType,
-          videocategory,
-        ] = responses;
-        this.itemsType = videoType.data.detail;
-        console.log("type:",videocategory.data.detail)
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    },
-    isShowType() {
-      this.addTypeVideo = !this.addTypeVideo
-      this.modalTyple = false
-    },
-    handleMenuItemClick(
-      active,
-      id,
-      title,
-      image,
-      des,
-      price,
-      type,
-      bkimage,
-      video,
-      time
-    ) {
-      const updatedForm = {
-        id,
-        title,
-        time,
-        image,
-        des,
-        price,
-        type,
-        bkimage,
-        video,
-      }
-      const updatedActive = active
-      this.$store.commit('SET_FORM', updatedForm)
-      this.$store.commit('SET_ACTIVE', updatedActive)
-      this.$store.commit('SET_ACTIVE_IMG', updatedActive)
-      this.$store.commit('SET_ACTIVE_BKIMG', updatedActive)
-      this.$store.commit('SET_ACTIVE_VIDEO', updatedActive)
-      // this.$nextTick(() => {
-      //   console.log('form::', this.$store.state.form);
-      // });
-      this.page = 'view'
-      this.select = true
-    },
-    viewMenu(page) {
-      this.page = page
-      this.select = true
-    },
-    closeSelect() {
-      this.select = false
-      this.page = ''
-    },
-  },
-}
-</script>
-
-<style scoped>
-.custom-arrow {
-  height: 40px;
-  width: 40px;
-  border-radius: 0px;
-  border: 0px solid #fff;
-  color: black;
-  background-color: transparent;
-  padding: 0px;
-}
-.custom-arrow:hover {
-  background-color: rgb(255, 215, 0);
-  color: #fff;
-}
-.table-container ::-webkit-scrollbar {
-  width: 4px;
-  height: 2px;
-}
-
-.table-container ::-webkit-scrollbar-thumb {
-  background-color: rgb(255, 215, 0);
-  border-radius: 4px;
-}
-
-.table-container ::-webkit-scrollbar-corner {
-  background-color: #ffff00;
-  border-radius: 4px;
-}
-.custom-font {
-  font-family: 'Noto Sans Lao', sans-serif;
-}
-
-.shadow-card {
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-  transition: box-shadow 0.3s ease;
-  cursor: pointer;
-}
-.custom-card:hover {
-  cursor: not-allowed;
-}
-.shadow-card:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-}
-.hover-pointer {
-  cursor: pointer;
-  background-color: none;
-}
-.custom-link {
-  border-radius: 14px;
-  background-color: rgb(255, 255, 255);
-}
-.BK-color {
-  background-color: rgb(255, 215, 0);
-}
-.color-hover {
-  color: none;
-}
-.color-hover:hover {
-  color: rgb(255, 215, 0);
-}
-
-.custom-video:hover {
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-}
-</style>

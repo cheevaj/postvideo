@@ -27,6 +27,10 @@ import Chart from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 
 export default {
+  props: {
+    video : Array,
+    type: Array,
+  },
   data() {
     return {
       colorBK: [
@@ -52,138 +56,164 @@ export default {
         'rgba(153, 102, 255)',
         'rgba(25, 159, 64)',
       ],
-      data: [
-        {
-          name: 'ໜັງ',
-          value: 83,
-        },
-        {
-          name: 'ກະຕຸນ',
-          value: 75,
-        },
-        { name: 'ອາຫານ', value: 64 },
-        {
-          name: 'ຂ່າວສານ',
-          value: 62,
-        },
-      ],
+      dataPie: [],
+      myChartBar: null,
       columns: [
         {
           title: 'ປະເພດ',
           key: 'name',
-          renderHeader: (h) => {
-            return h('h3', 'ປະເພດ')
-          },
-          render: (h, params) => {
-            return h(
-              'h3',
-              {
-                style: {
-                  borderRadius: '4px',
-                },
-              },
-              params.row.name
-            )
-          },
+          render: (h, params) =>
+            h('h3', { style: { borderRadius: '4px' } }, params.row.name),
         },
         {
           title: 'ສີ',
           key: 'color',
-          render: (h, params) => {
-            return h('div', {
+          render: (h, params) =>
+            h('div', {
               style: {
                 backgroundColor: params.row.color,
                 width: '26px',
                 height: '26px',
                 borderRadius: '50%',
               },
-            })
-          },
+            }),
         },
         {
           title: 'ຈໍານອນ',
           key: 'value',
-          render: (h, params) => {
-            return h(
+          render: (h, params) =>
+            h(
               'h4',
               {
-                style: {
-                  borderRadius: '4px',
-                  color:params.row.color,
-                },
+                style: { borderRadius: '4px', color: params.row.color },
               },
               params.row.value
-            )
-          },
+            ),
         },
       ],
-      dataPie: [],
-      myChartBar: null,
     }
+  },
+  computed: {
+    combinedData() {
+      return this.type.map((typeItem) => {
+        const matchingVideo = this.video.find(
+          (videoItem) => videoItem.typeId === typeItem.typeId
+        )
+        return {
+          languageId: typeItem.languageId || '',
+          name: typeItem.name || '',
+          typeId: typeItem.typeId,
+          videoData: matchingVideo ? matchingVideo.videos.videoData : [],
+          value: matchingVideo ? matchingVideo.videos.videoData.length : 0,
+        }
+      })
+    },
+  },
+  watch: {
+    video: 'initializeData',
+    type: 'initializeData',
   },
   mounted() {
     this.initializeData()
     this.createChart()
+    this.fetchData()
   },
   methods: {
+    fetchData() {
+      console.log('view-video:', this.video)
+      console.log('view-type:', this.type)
+      console.log('data-3:', this.combinedData)
+    },
     rowClassName(row, index) {
-      if (index % 2 === 0) {
-        return 'even-row'
-      }
-      return 'odd-row'
+      return index % 2 === 0 ? 'even-row' : 'odd-row'
     },
     initializeData() {
-      this.dataPie = this.data.map((item, index) => ({
+      this.dataPie = this.combinedData.map((item, index) => ({
         ...item,
         color: this.colorBK[index % this.colorBK.length],
       }))
     },
     createChart() {
       const ctx = document.getElementById('nyViewDoughnut').getContext('2d')
-
       if (this.myChartBar) {
         this.myChartBar.destroy()
       }
+
       const chartData = {
-        labels: this.data.map((item) => item.value),
+        labels: this.combinedData.map((item) => item.name),
         datasets: [
           {
-            label: 'User Values',
-            data: this.data.map((item) => item.value),
+            label: 'Video values:',
+            data: this.combinedData.map((item) => item.value),
             backgroundColor: this.colorBK,
             borderColor: 'rgba(255, 255, 255)',
             borderWidth: 1,
           },
         ],
       }
+
       this.myChartBar = new Chart(ctx, {
         type: 'bar',
         data: chartData,
         options: {
-          legend: {
-            display: false,
-          },
-          tooltips: {
-            mode: 'index',
-            intersect: false,
-            callbacks: {
-              label: function (tooltipItem, data) {
-                const dataset = data.datasets[tooltipItem.datasetIndex]
-                const currentValue = dataset.data[tooltipItem.index]
-                const total = dataset.data.reduce(
-                  (acc, value) => acc + value,
-                  0
-                )
-                const percentage = ((currentValue / total) * 100).toFixed(2)
-                return `${percentage}%`
+          scales: {
+            x: {
+              beginAtZero: true,
+              ticks: {
+                font: {
+                  family: 'Noto Sans Lao',
+                  size: 12,
+                },
+              },
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                font: {
+                  family: 'Noto Sans Lao',
+                  size: 12,
+                },
               },
             },
           },
           plugins: {
+            legend: {
+              display: false,
+              labels: {
+                font: {
+                  family: 'Noto Sans Lao',
+                  size: 12,
+                },
+              },
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function (tooltipItem, data) {
+                  const dataset = data.datasets[tooltipItem.datasetIndex]
+                  const currentValue = dataset.data[tooltipItem.index]
+                  const total = dataset.data.reduce(
+                    (acc, value) => acc + value,
+                    0
+                  )
+                  const percentage = ((currentValue / total) * 100).toFixed(2)
+                  return `${percentage}%`
+                },
+              },
+              bodyFont: {
+                family: 'Noto Sans Lao',
+                size: 12,
+              },
+            },
             datalabels: {
               display: true,
               color: '#000',
               anchor: 'end',
+              font: {
+                family: 'Noto Sans Lao',
+                weight: 'bold',
+              },
               formatter: (value, ctx) => {
                 const total = ctx.chart.data.datasets[0].data.reduce(
                   (acc, value) => acc + value,
@@ -191,9 +221,6 @@ export default {
                 )
                 const percentage = ((value / total) * 100).toFixed(2)
                 return `${percentage}%`
-              },
-              font: {
-                weight: 'bold',
               },
             },
           },
@@ -218,7 +245,7 @@ export default {
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px; 
+  width: 4px;
   height: 4px;
 }
 
@@ -232,7 +259,6 @@ export default {
 }
 
 .custom-scrollbar::-webkit-scrollbar-corner {
-  background-color: transparent; 
+  background-color: transparent;
 }
-
 </style>
