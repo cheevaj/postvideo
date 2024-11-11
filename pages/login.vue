@@ -40,7 +40,7 @@
         <a
           href="#"
           class="forgot-password"
-          @click="messageModal('error', 'ຍັງບໍ່ໃຫ້ບໍລິການ.')"
+          @click="messageModal('error', 'ຍັງບໍ່ໄດ້ໃຫ້ບໍລິການ.')"
           >Forget Password</a
         >
       </div>
@@ -52,7 +52,7 @@
       >
       <p class="register-text" style="color: #4d4d00">
         Don’t have an account?
-        <a href="#" @click="messageModal('error', 'ຍັງບໍ່ໄດ້ເປິດໃຫ້ສະມັດ.')"
+        <a href="#" @click="messageModal('error', 'ຍັງບໍ່ໄດ້ເປິດໃຫ້ສະໝັດ.')"
           >Register</a
         >
       </p>
