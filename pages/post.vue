@@ -6,7 +6,7 @@
       right
       fixed
       width="650"
-      class="table-container"
+      class="table-container-add scrollbar"
       style="background-color: rgb(242, 242, 242)"
       @click.stop
     >
@@ -84,7 +84,7 @@
         <div style="text-align: center">
           <v-card
             flat
-            class="table-container"
+            class="table-container-add scrollbar"
             style="
               height: 50px;
               z-index: 100;
@@ -137,7 +137,7 @@
           <v-card flat class="pa-4" style="border-radius: 15px">
             <v-card-actions>
               <div style="display: flex">
-                <form>
+                <form @submit.prevent="searchVideo">
                   <Input
                     class="custom-font"
                     v-model="search"
@@ -145,6 +145,7 @@
                     suffix="ios-search"
                     placeholder="ກະລຸນາປ້ອມຊື່"
                     style="width: 350px; height: 35px; margin-top: 1px"
+                    @keydown.enter="searchVideo"
                   />
                 </form>
                 <v-btn
@@ -160,6 +161,7 @@
                     padding-left: 4px;
                     padding-right: 4px;
                   "
+                  @click="searchVideo"
                 >
                   <h3 class="custom-font color-text">{{ 'ຄົ້ນຫາ' }}</h3>
                 </v-btn>
@@ -218,11 +220,13 @@
                                 <v-img
                                   width="100%"
                                   height="100%"
+                                  :gradient="item_video.videoQualityinfodata?.length > 0 || item_video.videoSeriesData?.length > 0
+                                    ? null
+                                    : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'"
                                   class="text-center"
                                   :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
-                                    item_video.videoQualityinfodata.length > 0
-                                      ? item_video.videoQualityinfodata[0]
-                                          ?.thumbnail
+                                    item_video.videoQualityinfodata?.length > 0
+                                      ? item_video.videoQualityinfodata[0]?.thumbnail
                                       : item_video.img
                                   }`"
                                   style="
@@ -307,7 +311,240 @@
                                       })
                                     "
                                   >
-                                  <div v-html="truncatedDescription(item_video.description)"></div>
+                                    <div
+                                      v-html="
+                                        truncatedDescription(
+                                          item_video.description
+                                        )
+                                      "
+                                    ></div>
+                                  </span>
+                                </v-card-text>
+                              </v-card>
+                            </v-col>
+                            <!-- <v-col cols="1"   class="pl-0">
+                              <v-card flat height="85" style="align-items: center; justify-content: center; padding-top: 25px;">
+                                <v-btn text style="background-color: rgb(51, 204, 51); color: #ffff; border-radius: 10px;">Active</v-btn>
+                              </v-card>
+                            </v-col> -->
+                            <v-col cols="2" class="py-0 pr-0">
+                              <v-card
+                                flat
+                                height="85"
+                                class="text-right mt-2 p"
+                              >
+                                <v-menu
+                                  v-model="menu[index]"
+                                  :close-on-content-click="false"
+                                  offset-y
+                                  nudge-right="45"
+                                  @click:outside="menu[index] = false"
+                                >
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-btn
+                                      fab
+                                      small
+                                      text
+                                      class="pa-0"
+                                      v-bind="attrs"
+                                      v-on="on"
+                                    >
+                                      <v-icon>mdi-dots-vertical</v-icon>
+                                    </v-btn>
+                                  </template>
+                                  <v-card
+                                    width="150"
+                                    class="outlined-border color-grad-background"
+                                  >
+                                    <h4
+                                      class="custom-font text-left pa-2 color-grad-background"
+                                    >
+                                      ຈັດການ
+                                    </h4>
+                                    <v-list
+                                      class="pa-0 text-center"
+                                      style="border-radius: 8px"
+                                    >
+                                      <v-list-item
+                                        v-for="(
+                                          item_menu, item_index
+                                        ) in itemsMenu"
+                                        :key="item_index"
+                                        @click="
+                                          selectMenu(false, item_index, {
+                                            id: item_video.videoId,
+                                            title: item_video.name,
+                                            image: item_video.img,
+                                            des: item_video.description,
+                                            price: item_video.price,
+                                            type: item_video.typeId,
+                                            bkimage: item_video.bgImg,
+                                            video:
+                                              item_video.videoQualityinfodata ||
+                                              videoSeriesData,
+                                            time: item_video.time,
+                                            resolution: item_video.resolution,
+                                          })
+                                          menu[index] = false
+                                        "
+                                        class="custom-font mouse-hover-menu"
+                                      >
+                                        <v-list-item-content>
+                                          <v-card-actions class="pa-0">
+                                            <v-icon>{{ item_menu.icon }}</v-icon
+                                            >&nbsp;&nbsp;{{ item_menu.title }}
+                                          </v-card-actions>
+                                        </v-list-item-content>
+                                      </v-list-item>
+                                    </v-list>
+                                  </v-card>
+                                </v-menu>
+                              </v-card>
+                            </v-col>
+                          </v-row>
+                        </v-card-text>
+                        <v-divider></v-divider>
+                      </div>
+                    </div>
+                  </div>
+                </TabPane>
+                <TabPane
+                  v-if="searchvideo "
+                  label="ຄົ້ນຫາ"
+                  class="custom-font"
+                >
+                <div v-if="tabItem === 3" class="py-2 table-container-post scrollbar" style="height: 580px; overflow-y: auto;" >
+                  <v-card-text v-if="videosearch.length <= 0" width="100%" height="120px mt-12" class="text-center"><h3 class="custom-font">ບໍ່ພົບວີດີໂອທີ່ຄົນຫາ</h3></v-card-text>           
+                  <div
+                      v-for="(item_video, index) in videosearch"
+                      :key="index"
+                    >
+                      <div v-if="tabItem === filteredType.length">
+                        <v-card-text class="pt-2 pb-2 pl-0 pr-3">
+                          <v-row>
+                            <v-col cols="2">
+                              <v-card
+                                flat
+                                height="85"
+                                class="hover-pointer"
+                                @click="
+                                  selectMenu(false, 9, {
+                                    id: item_video.videoId,
+                                    title: item_video.name,
+                                    image: item_video.img,
+                                    des: item_video.description,
+                                    price: item_video.price,
+                                    type: item_video.typeId,
+                                    bkimage: item_video.bgImg,
+                                    video:
+                                      item_video.videoQualityinfodata ||
+                                      videoSeriesData,
+                                    time: item_video.time,
+                                    resolution: item_video.resolution,
+                                  })
+                                "
+                              >
+                                <v-img
+                                  width="100%"
+                                  height="100%"
+                                  :gradient="item_video.videoQualityinfodata?.length > 0 || item_video.videoSeriesData?.length > 0
+                                    ? null
+                                    : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'"
+                                  class="text-center"
+                                  :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
+                                    item_video.videoQualityinfodata?.length > 0
+                                      ? item_video.videoQualityinfodata[0]?.thumbnail
+                                      : item_video.img
+                                  }`"
+                                  style="
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                  "
+                                >
+                                  <v-icon
+                                    size="32"
+                                    color="#ffcc00"
+                                    style="
+                                      background-color: rgba(13, 13, 13, 0.8);
+                                      border-radius: 50%;
+                                      padding: 0px;
+                                    "
+                                  >
+                                    {{
+                                      item_video.videoQualityinfodata?.length >
+                                        0 ||
+                                      item_video.videoSeriesData?.length > 0
+                                        ? 'mdi-play'
+                                        : 'mdi-download'
+                                    }}
+                                  </v-icon>
+                                  <span
+                                    class="pr-2"
+                                    style="
+                                      position: absolute;
+                                      right: 2px;
+                                      bottom: 2px;
+                                      color: #fff;
+                                    "
+                                  >
+                                    {{ item_video.time }}
+                                  </span>
+                                </v-img>
+                              </v-card>
+                            </v-col>
+                            <v-col cols="8" class="px-1">
+                              <v-card flat height="85" class="rounded-0">
+                                <h3 class="py-1 px-0">
+                                  <span
+                                    class="custom-font hover-pointer"
+                                    @click="
+                                      selectMenu(false, 9, {
+                                        id: item_video.videoId,
+                                        title: item_video.name,
+                                        image: item_video.img,
+                                        des: item_video.description,
+                                        price: item_video.price,
+                                        type: item_video.typeId,
+                                        bkimage: item_video.bgImg,
+                                        video:
+                                          item_video.videoQualityinfodata ||
+                                          videoSeriesData,
+                                        time: item_video.time,
+                                        resolution: item_video.resolution,
+                                      })
+                                    "
+                                  >
+                                    {{ item_video.name }}
+                                  </span>
+                                </h3>
+                                <v-card-text class="pa-0 custom-font">
+                                  <span
+                                    class="custom-font hover-pointer"
+                                    @click="
+                                      selectMenu(false, 9, {
+                                        id: item_video.videoId,
+                                        title: item_video.name,
+                                        image: item_video.img,
+                                        des: item_video.description,
+                                        price: item_video.price,
+                                        type: item_video.typeId,
+                                        bkimage: item_video.bgImg,
+                                        video:
+                                          item_video.videoQualityinfodata ||
+                                          item_video.videoSeriesData,
+                                        time: item_video.time,
+                                        resolution: item_video.resolution,
+                                      })
+                                    "
+                                  >
+                                    <div
+                                      v-html="
+                                        truncatedDescription(
+                                          item_video.description
+                                        )
+                                      "
+                                    ></div>
                                   </span>
                                 </v-card-text>
                               </v-card>
@@ -400,11 +637,22 @@
                 </TabPane>
               </Tabs>
               <v-card-actions
+                v-if="tabItem !== filteredType.length"
                 class="pa-0"
                 style="position: absolute; bottom: 18px; right: 25px"
               >
-                <ShowPage :total="NumberPage" @updatePage="handlePageUpdate" />
-                <v-icon outlined class="custom-button" size="32" @click="() => { NumberPage <= 125 ? NumberPage += 5 : NumberPage }">mdi-plus</v-icon>
+                <ShowPage :total="NumberPage" :page="currentPage" @updatePage="handlePageUpdate"/>
+                <v-icon
+                  outlined
+                  class="custom-button"
+                  size="32"
+                  @click="
+                    () => {
+                      NumberPage <= 125 ? (NumberPage += 5) : NumberPage
+                    }
+                  "
+                  >mdi-plus</v-icon
+                >
               </v-card-actions>
             </div>
           </v-card>
@@ -423,7 +671,8 @@ export default {
     return {
       currentPage: 1,
       tabItem: 0,
-      NumberPage:25,
+      NumberPage: 25,
+      searchvideo:false,
       modal: false,
       modalactive: false,
       select: false,
@@ -445,7 +694,7 @@ export default {
         { title: 'ລົບວີດີໂອ', icon: 'mdi-delete' },
         // { title: 'ເພີ່ມວີດີໂອ', icon: 'mdi-movie-open-plus' },
       ],
-      videoGroupedByType: {},
+      videosearch: [],
       pageVideo: [],
     }
   },
@@ -457,16 +706,19 @@ export default {
       return this.tabs.filter((item) => item.languageId === '1002')
     },
     paginatedVideos() {
-      const endIndex = (this.currentPage * 5);
-      const startIndex = endIndex - 5;
-      console.log('Start:',startIndex ,'End:',endIndex);
-      return this.video[this.tabItem]?.videos?.videoData.slice(startIndex, endIndex) || [];
+      const endIndex = this.currentPage * 5
+      const startIndex = endIndex - 5
+      return (
+        this.video[this.tabItem]?.videos?.videoData.slice(
+          startIndex,
+          endIndex
+        ) || []
+      )
     },
     truncatedDescription() {
-      return (description) => description.length > 25 
-        ? `${description.slice(0, 25)}...` 
-        : description;
-    }
+      return (description) =>
+        description.length > 25 ? `${description.slice(0, 25)}...` : description
+    },
   },
   mounted() {
     this.filterMoviesByType()
@@ -482,6 +734,30 @@ export default {
     //   this.dialogPage = 0;
     //   this.SeriesMovie = 504405213;
     // },
+    async searchVideo() {
+      if(this.search && this.search !== ''){
+        this.tabItem = this.filteredType.length;
+        this.loading = true;
+        this.searchvideo = true;
+        try {
+          const response = await this.$axios.post(
+            'http://172.28.17.102:2024/video/searchVideoWithAllCategory?pageNo=1&pageSize=250',
+            {
+              videoName: this.search,
+            }
+          )
+          this.videosearch = response.data.detail.data || [];
+          console.log('Search-response:', this.videosearch)
+          console.log('video:',this.video)
+        } catch (error) {
+          console.error('Error fetching data:', error)
+        }
+      }
+      else {
+        this.messageModal('error', 'ຂໍ້ມູນຫວ່າງເປົ່າ')
+      }
+      this.loading = false;
+    },
     selectMenu(active, menu, videoDetails) {
       const {
         id,
@@ -496,39 +772,44 @@ export default {
         resolution,
       } = videoDetails
       if (menu === 0) {
-        this.SeriesMovie = type
-        this.name = title
-        console.log(type)
-        this.handleMenuItemClick(
-          active,
-          id,
-          title,
-          image,
-          des,
-          price,
-          type,
-          bkimage,
-          video,
-          time,
-          resolution
-        )
-        this.select = false
-        this.rightDrawer = true
+        if((videoDetails.video.length > 0) && (videoDetails.type !== 504405213)){
+          this.messageModal('success', 'ເພີ່ມວີດີໂອສໍາເລັດ.');
+        }
+        else {
+          this.SeriesMovie = type
+          this.name = title
+          this.handleMenuItemClick(
+            active,
+            id,
+            title,
+            image,
+            des,
+            price,
+            type,
+            bkimage,
+            video,
+            time,
+            resolution
+          )
+          this.select = false
+          this.rightDrawer = true
+        }
       } else if (menu === 1) {
-        this.handleMenuItemClick(
-          active,
-          id,
-          title,
-          image,
-          des,
-          price,
-          type,
-          bkimage,
-          video,
-          time,
-          resolution
-        )
-        this.rightDrawer = true
+          this.messageModal('error', 'ຍັງບໍ່ສາມາດແກ້ໄຂວີດີໂອໄດ້.')
+          // this.handleMenuItemClick(
+          //   active,
+          //   id,
+          //   title,
+          //   image,
+          //   des,
+          //   price,
+          //   type,
+          //   bkimage,
+          //   video,
+          //   time,
+          //   resolution
+          // )
+          // this.rightDrawer = true
       } else if (menu === 2) {
         this.idVideo = id
         this.modalactive = true
@@ -541,10 +822,9 @@ export default {
         this.modal = true
         this.rightDrawer = false
       } else if (menu === 9) {
-        if(menu === 9){
-          return this.messageModal('error', 'ຍັງບໍ່ສາມາດເບີ່ງວີດີໂອໄດ້.');
-        }
-        else {
+        if (menu === 9) {
+          return this.messageModal('error', 'ຍັງບໍ່ສາມາດເບີ່ງວີດີໂອໄດ້.')
+        } else {
           this.handleMenuItemClick(
             active,
             id,
@@ -608,16 +888,20 @@ export default {
     },
     deleteVideo(id) {
       this.modal = false
-      id === '54984' ? this.messageModal('success' ,false) : this.messageModal('error', false)
+      id === '54984'
+        ? this.messageModal('success', false)
+        : this.messageModal('error', false)
     },
     activeVideo(id) {
       this.modal = false
-      id === '1234' ? this.messageModal('success' ,false) : this.messageModal('error', false)
+      id === '1234'
+        ? this.messageModal('success', false)
+        : this.messageModal('error', false)
     },
     handlePageUpdate(page) {
       this.currentPage = page
       this.pageVideo.forEach((item) => {
-        item.limit = (5 * page);
+        item.limit = 5 * page
       })
       this.handleSearch()
     },
@@ -637,7 +921,6 @@ export default {
       }
     },
     async handleSearch() {
-      console.log('f',this.pageVideo)
       try {
         const response = await this.$axios.post(
           'http://172.28.17.102:2024/video/getAllVideoWithFileVideoFromType',
@@ -646,26 +929,30 @@ export default {
           }
         )
         this.video = response.data.detail?.data || []
-        console.log('Fetched videos:', this.video)
+        // console.log('video:',this.video)
       } catch (error) {
         console.error('Error fetching videos by type:', error)
       }
     },
     messageModal(type, value) {
       const getMessageContent = () => {
-        const successMessage = this.modalactive ? 'ປິດວີດີໂອສໍາເລັດ.' : 'ລົບວີດີໂອສໍາເລັດ.';
-        const errorMessage = this.modalactive ? 'ປິດວີດີໂອບໍ່ສໍາເລັດ.' : 'ລົບວີດີໂອບໍ່ສໍາເລັດ.';
-        
+        const successMessage = this.modalactive
+          ? 'ປິດວີດີໂອສໍາເລັດ.'
+          : 'ລົບວີດີໂອສໍາເລັດ.'
+        const errorMessage = this.modalactive
+          ? 'ປິດວີດີໂອບໍ່ສໍາເລັດ.'
+          : 'ລົບວີດີໂອບໍ່ສໍາເລັດ.'
+
         if (type === 'success') {
-          return value || successMessage;
+          return value || successMessage
         } else {
-          return value || errorMessage;
+          return value || errorMessage
         }
-      };
+      }
       this.$Message[type]({
         background: true,
         content: `<span class="custom-font">${getMessageContent()}</span>`,
-      });
+      })
     },
   },
 }
@@ -705,21 +992,56 @@ export default {
 .color-text {
   color: #ffff;
 }
-.table-container ::-webkit-scrollbar {
-  width: 4px;
+.table-container-post {
+  scrollbar-color: rgba(255, 200, 0) rgba(166, 166, 166, 0.5);
+  scrollbar-width: thin;
+  overflow-y: auto;
+}
+
+.table-container-post ::-webkit-scrollbar {
+  width: 2px;
   height: 2px;
 }
 
-.table-container ::-webkit-scrollbar-thumb {
-  background-color: rgb(255, 215, 0);
+.table-container-post ::-webkit-scrollbar-thumb {
+  background-color: rgb(255, 200, 0);
   border-radius: 4px;
 }
 
-.table-container ::-webkit-scrollbar-corner {
-  background-color: #ffff00;
+.table-container-post ::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(255, 200, 0);
+}
+
+.table-container-post ::-webkit-scrollbar-corner {
+  background-color: rgb(255, 200, 0);
   border-radius: 4px;
 }
 
+.table-container-add ::-webkit-scrollbar {
+  width: 0px;
+  height: 4px;
+}
+.table-container-add ::-webkit-scrollbar-thumb {
+  background-color: rgb(255, 204, 0);
+  border-radius: 2px;
+}
+
+.table-container-add ::-webkit-scrollbar-corner {
+  background-color: rgb(255, 204, 0);
+  border-radius: 1px;
+}
+.scrollbar {
+  overflow-x: hidden;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 0px;
+  height: 2px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgb(255, 204, 0);
+}
 .color-hover {
   color: none;
 }

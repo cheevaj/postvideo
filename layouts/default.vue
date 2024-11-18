@@ -7,13 +7,21 @@
         clipped
         fixed
         width="200"
+        style="border: 1px solid #ffc400;"
         app
       >
-        <v-list>
+        <v-card flat height="50px" class="rounded-0 text-center " style="background-color: #ffc400;">
+          <br />
+          <h2 v-if="!miniVariant">Admin</h2>
+          <h4 v-else>Admin</h4>
+        </v-card>
+        <v-divider style="background-color: #997500; height: 2px;"></v-divider>
+        <v-list class="py-0">
           <v-list-item
             v-for="(item, i) in items"
             :key="i"
             :to="item.to"
+            class="py-0"
             router
             exact
           >

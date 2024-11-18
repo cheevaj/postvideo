@@ -1,14 +1,13 @@
 <template>
   <div>
     <v-pagination
-      v-model="page"
+      v-model="currentPage"
       :length="totalPages"
       :total-visible="7"
       color="rgb(255, 215, 0)"
-      style="border-radius: 4px; "
+      style="border-radius: 4px;"
       @input="emitPage"
-    >
-    </v-pagination>
+    ></v-pagination>
   </div>
 </template>
 
@@ -19,25 +18,33 @@ export default {
       type: Number,
       required: true,
     },
+    page: {
+      type: Number,
+      default: 1,
+    },
   },
   data() {
     return {
-      page: 1,
-    }
+      currentPage: this.page,
+    };
   },
   computed: {
     totalPages() {
-      return Math.ceil(this.total / 5)
+      return Math.ceil(this.total / 5);
+    },
+  },
+  watch: {
+    page(newVal) {
+      this.currentPage = newVal;
+    },
+    currentPage(newVal) {
+      this.$emit('updatePage', newVal);
     },
   },
   methods: {
     emitPage() {
-      this.$emit('updatePage', this.page)
-    },
-    changePage(item) {
-      this.page = item
-      this.emitPage()
+      this.$emit('updatePage', this.currentPage);
     },
   },
-}
+};
 </script>

@@ -116,14 +116,8 @@ export default {
   mounted() {
     this.initializeData()
     this.createChart()
-    this.fetchData()
   },
   methods: {
-    fetchData() {
-      console.log('view-video:', this.video)
-      console.log('view-type:', this.type)
-      console.log('data-3:', this.combinedData)
-    },
     rowClassName(row, index) {
       return index % 2 === 0 ? 'even-row' : 'odd-row'
     },

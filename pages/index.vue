@@ -89,7 +89,7 @@ export default {
       select: false,
       right: true,
       itemsType: [],
-      video: [],
+      gropvideo: [],
       pageVideo: [],
 
       data: [
@@ -113,14 +113,14 @@ export default {
       return this.itemsType.filter((item) => item.languageId === '1002')
     },
     totalVideoCount() {
-      return this.video.reduce((total, item) => {
+      return this.gropvideo.reduce((total, item) => {
         return (
           total + (item.videos.videoData ? item.videos.videoData.length : 0)
         )
       }, 0)
     },
     viewVideoCount() {
-      return this.video.reduce((total, item) => {
+      return this.gropvideo.reduce((total, item) => {
         if (item.videos && Array.isArray(item.videos.videoData)) {
           return (
             total +
@@ -142,8 +142,8 @@ export default {
             typeLimits: this.pageVideo,
           }
         )
-        this.video = response.data.detail?.data || []
-        // console.log('Fetched videos:', this.video, this.totalVideoCount)
+        this.gropvideo = response.data.detail?.data || [];
+        console.log('Fetched videos:', this.gropvideo, this.filteredType)
         this.createChart()
       } catch (error) {
         console.error('Error fetching videos by type:', error)
@@ -216,7 +216,7 @@ export default {
         .getElementById('myChartVideoDoughnut')
         .getContext('2d')
       const data = this.filteredType.map((typeItem) => {
-        const matchingVideo = this.video.find(
+        const matchingVideo = this.gropvideo.find(
           (videoItem) => videoItem.typeId === typeItem.typeId
         )
         return {
@@ -227,7 +227,7 @@ export default {
           value: matchingVideo ? matchingVideo.videos.videoData.length : 0,
         }
       })
-      console.log('hh', data)
+      
       if (this.myChartBar) {
         this.myChartBar.destroy()
       }
@@ -400,7 +400,7 @@ export default {
             style="max-width: 84vw"
           >
             <v-card style="height: 75vh; width: 84vw">
-              <ViewVideo v-if="allvideo" :video="video" :type="filteredType" />
+              <ViewVideo v-if="allvideo" :video="gropvideo" :type="filteredType" />
             </v-card>
           </v-dialog>
           <v-card
@@ -429,7 +429,7 @@ export default {
                   backgroundColor: modalVideo ? 'transparent' : 'white',
                 }"
               >
-                <v-img :src="require('~/static/movieicon.jpg')" />
+                <v-img :src="require('@/static/movieicon.jpg')" />
               </v-card>
             </v-card-actions>
           </v-card>
@@ -527,7 +527,8 @@ export default {
                     clearable
                     class="mt-2 custom-font"
                     style="color: #ff9900"
-                  />
+                    
+                  /> <!-- @keydown.enter="" -->
                 </div>
                 <v-card
                   outlined
@@ -590,8 +591,7 @@ export default {
               backgroundColor:
                 page === 'chart-doughnut' ? 'transparent' : 'white',
             }"
-            @click="viewMenu('chart-doughnut')"
-          >
+          > <!--  @click="viewMenu('chart-doughnut')"  -->
             <v-card-text class="pa-0">
               <canvas id="myChartVideoDoughnut"></canvas>
             </v-card-text>
@@ -604,9 +604,8 @@ export default {
             :style="{
               backgroundColor: page === 'chart-bar' ? 'transparent' : 'white',
             }"
-            @click="viewMenu('chart-bar')"
-          >
-            <ChartBar style="height: 100%; width: 100%" />
+          > <!--   @click="viewMenu('chart-bar')"  -->
+            <ChartBar style="height: 100%; width: 100%" :video="gropvideo" :type="filteredType" />
           </v-card>
         </v-col>
         <v-col>
@@ -620,7 +619,7 @@ export default {
           >
             <v-card-text>
               <v-row>
-                <v-col v-for="(items, index) in video" :key="index" cols="3">
+                <v-col v-for="(items, index) in gropvideo" :key="index" cols="3">
                   <v-card
                     class="custom-video"
                     outlined
@@ -742,7 +741,7 @@ export default {
         <v-card-text class="px-0" style="padding-top: 3px; padding-bottom: 4px">
           <ViewPage v-if="page === 'view'" />
           <viewIndexBar v-else-if="page === 'chart-bar'" />
-          <viewIndexDoughnut v-else-if="page === 'chart-doughnut'" />
+          <viewIndexDoughnut v-else-if="page === 'chart-doughnut'" :video="gropvideo" :type="filteredType" />
         </v-card-text>
       </v-card>
     </v-dialog>

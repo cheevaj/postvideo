@@ -40,7 +40,7 @@
                     size="52"
                     style="color: rgb(255, 215, 0)"
                   />
-                  <p class="custom-font color-text-load">ໂຫຼດຮູບພາບ</p>
+                  <p class="custom-font color-text-load">ໂຫຼດຮູບພາບໂປຣໄຟຣ</p>
                 </div>
               </Upload>
               <Upload
@@ -69,7 +69,7 @@
                       border: 1px solid rgb(166, 166, 166);
                     "
                   />
-                  <p class="custom-font color-text-load">ໂຫຼດຮູບພາບ</p>
+                  <p class="custom-font color-text-load">ໂຫຼດຮູບພາບໂປຣໄຟຣ</p>
                 </v-card>
               </Upload>
             </v-col>
@@ -86,7 +86,7 @@
                     size="52"
                     style="color: rgb(255, 215, 0)"
                   />
-                  <p class="custom-font color-text-load">ໂຫຼດຮູບພືນຫຼັງ</p>
+                  <p class="custom-font color-text-load">ໂຫຼດຮູບພາບພືນຫຼັງ</p>
                 </div>
               </Upload>
               <Upload
@@ -115,7 +115,7 @@
                       border: 1px solid rgb(166, 166, 166);
                     "
                   />
-                  <p class="custom-font color-text-load">ໂຫຼດຮູບພືນຫຼັງ</p>
+                  <p class="custom-font color-text-load">ໂຫຼດຮູບພາບພືນຫຼັງ</p>
                 </v-card>
               </Upload>
             </v-col>
@@ -124,7 +124,7 @@
                 class="custom-font color-text-load"
                 style="text-decoration: underline"
               >
-                ໂຫຼດຮູບໂຄສະນາ
+                ໂຫຼດຮູບພາບລີວິວ
               </p>
             </v-col>
             <v-col
@@ -686,8 +686,10 @@ export default {
           title: videoDetail.videoName || '',
           des: des || '',
           type: type || '',
+          image:image || null,
         }
         console.log('valueE:', this.dataVideo);
+        console.log('valueE:', typeof(this.dataVideo.image));
         this.typeofID = type;
         this.messageModal('success');
       } catch (error) {

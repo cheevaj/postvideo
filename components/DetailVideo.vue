@@ -133,7 +133,7 @@
                       size="52"
                       style="color: rgb(255, 215, 0)"
                     />
-                    <p class="custom-font color-text-load">ໂຫຼດຮູບພາບ</p>
+                    <p class="custom-font color-text-load">ໂຫຼດໜ້າປົດວີດີໂອ</p>
                   </div>
                 </Upload>
               </div>

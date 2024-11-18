@@ -8,9 +8,7 @@
         <v-img
           width="100%"
           height="250px"
-          :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
-            form.image || ''
-          }`"
+          :src="isFile(form.image) ? playURL(form.image) : `https://apicenter.laotel.com:9443/tplussocial?img=${form.image || ''}`"
         />
       </v-card>
     </v-card-text>
@@ -24,8 +22,8 @@
       <v-stepper-items class="pa-0">
           <br />
           <v-stepper-content step="1" class="pa-0">
-            <h3 class="custom-font px-3">ຕອນຂອງຊີລີ່:</h3>
-            <v-card outlined class="pa-2 custom-margin" min-height="180px">
+            <h3 class="custom-font px-3">ຕອນຂອງຊີລີ່</h3>
+            <v-card outlined class="pa-2 custom-margin text-center" min-height="210px" style="background-color: rgb(248, 248, 248);">
               <v-card-text class="pa-2">
                 <v-row>
                   <v-col
@@ -48,6 +46,7 @@
                         :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
                           items.img || ''
                         }`"
+                        :gradient="items.VideoSeriesQualityInfo.length > 0 ? null : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'"
                         style="
                           display: flex;
                           align-items: center;
@@ -85,17 +84,43 @@
                       </v-img>
                     </v-card>
                   </v-col>
+                  <v-col v-if="epOfSeries.length <= 0" cols="3" class="px-1 py-2" style="
+                          border-radius: 18px;
+                          margin-top: 0px;
+                          display: flex;
+                          align-items: center;
+                        ">
+                      <v-card
+                        class="custom-btn hover-pointer"
+                        height="55"
+                        width="55"
+                        style="
+                          background-color: #ffff;
+                          border: 1px solid #ffff;
+                          border-radius: 18px;
+                          margin-top: 0px;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                        "
+                        @click="nextStep(2, 0)"
+                      >
+                        <v-icon color="rgb(128, 128, 128)" size="32">mdi-movie-open-plus</v-icon>
+                      </v-card>
+                  </v-col>
                 </v-row>
               </v-card-text>
+              <h2 v-if="epOfSeries.length <= 0" class="custom-font" style="color: #a6a6a6;">ຍັງບໍ່ມີວີດີໂອ</h2>
             </v-card>
             <v-card-actions>
               <v-spacer />
               <v-btn
+                v-if="epOfSeries.length > 0"
                 class="custom-btn"
                 style="background-color: rgb(255, 215, 0); color: #ffff"
                 @click="nextStep(2, 0)"
               >
-                <v-icon size="18">mdi-plus</v-icon>ເພີ່ມ
+                <v-icon size="18">mdi-plus</v-icon>ເພີ່ມ Ep
               </v-btn>
             </v-card-actions>
           </v-stepper-content>
@@ -104,7 +129,7 @@
               <div class="px-0">
                 <br />
                 <h2 class="custom-font" style="text-decoration: underline">
-                  ຊື່ວີດີໂອ
+                  ຊື່ວີດີໂອ ຫຼື ຕອນຂອງຊີລີ່
                 </h2>
                 <h2>
                   <Input
@@ -422,9 +447,9 @@ export default {
     this.getData()
   },
   methods: {
-    // updateSeries(item){
-    //   console.log('update-Ep.',item);
-    // },
+    isFile(value) {
+      return value instanceof File;
+    },
     nextStep(value, SVideoId) {
       if(value === 3){
         if(SVideoId.VideoSeriesQualityInfo.length > 0){

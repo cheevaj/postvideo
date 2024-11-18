@@ -37,12 +37,14 @@
     </v-card-text>
   </div>
 </template>
-
 <script>
 import Chart from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
-
 export default {
+  props: {
+    video: Array,
+    type: Array,
+  },
   data() {
     return {
       colorBK: [
@@ -68,52 +70,14 @@ export default {
         'rgba(153, 102, 255)',
         'rgba(25, 159, 64)',
       ],
-      data: [
-        {
-          name: 'key to data can make the item selected by default.',
-          value: 83,
-        },
-        {
-          name: 'You can realise many needed effects by using events below properly',
-          value: 75,
-        },
-        { name: 'Emitted when a row is selected. Return value', value: 64 },
-        {
-          name: 'Emitted when click select-all checkbox. Return value',
-          value: 62,
-        },
-        {
-          name: 'The sorting uses ascending order or descending order by default. ',
-          value: 53,
-        },
-        {
-          name: 'props with a function accepting 3 arguments: a, b and type.',
-          value: 43,
-        },
-        { name: 'You can customize sort method by setting', value: 35 },
-        {
-          name: 'After sorting, you have to set the new data manually. Details on API Doc.',
-          value: 32,
-        },
-        {
-          name: 'prop items. It accepts an array. Details on Demo & API Doc.',
-          value: 30,
-        },
-        {
-          name: 'After you declare a slot in a column of columns, you can use parameters in the slot of the Table.',
-          value: 25,
-        },
-      ],
       columns: [
         {
-          title: 'ຊື່',
+          title: 'ປະເພດໜັງ',
           key: 'name',
-          width:'460px',
         },
         {
           title: 'ສີ',
           key: 'color',
-          width:'118px',
           render: (h, params) => {
             return h('div', {
               style: {
@@ -128,14 +92,13 @@ export default {
         {
           title: 'ຈໍານອນ',
           key: 'value',
-          width:'118px',
           render: (h, params) => {
             return h(
               'h4',
               {
                 style: {
                   borderRadius: '4px',
-                  color:params.row.color,
+                  color: params.row.color,
                 },
               },
               params.row.value
@@ -144,73 +107,21 @@ export default {
         },
       ],
       dataPie: [],
-      dataTable: [
-        {
-          imge: 'https://wallpaperaccess.com/full/1356284.jpg',
-          name: 'key to data can make the item selected by default.',
-          value: 83,
-        },
-        {
-          imge: 'https://wallpaperaccess.com/full/1356284.jpg',
-          name: 'You can realise many needed effects by using events below properly',
-          value: 75,
-        },
-        {
-          imge: 'https://wallpaperaccess.com/full/1356284.jpg',
-          name: 'Emitted when a row is selected. Return value',
-          value: 64,
-        },
-        {
-          imge: 'https://wallpaperaccess.com/full/1356284.jpg',
-          name: 'Emitted when click select-all checkbox. Return value',
-          value: 62,
-        },
-        {
-          imge: 'https://wallpaperaccess.com/full/1356284.jpg',
-          name: 'The sorting uses ascending order or descending order by default. ',
-          value: 53,
-        },
-        {
-          imge: 'https://wallpaperaccess.com/full/1356284.jpg',
-          name: 'props with a function accepting 3 arguments: a, b and type.',
-          value: 43,
-        },
-        {
-          imge: 'https://wallpaperaccess.com/full/1356284.jpg',
-          name: 'You can customize sort method by setting',
-          value: 35,
-        },
-        {
-          imge: 'https://wallpaperaccess.com/full/1356284.jpg',
-          name: 'After sorting, you have to set the new data manually. Details on API Doc.',
-          value: 32,
-        },
-        {
-          imge: 'https://wallpaperaccess.com/full/1356284.jpg',
-          name: 'prop items. It accepts an array. Details on Demo & API Doc.',
-          value: 30,
-        },
-        {
-          imge: 'https://wallpaperaccess.com/full/1356284.jpg',
-          name: 'After you declare a slot in a column of columns, you can use parameters in the slot of the Table.',
-          value: 25,
-        },
-      ],
       columnsTable: [
         {
           title: 'ວີດີໂອ',
           key: 'imge',
-          width:'200',
+          width: '200',
           render: (h, params) => {
             return h('img', {
               attrs: {
-                src: params.row.imge,
+                src: `https://apicenter.laotel.com:9443/tplussocial?img=${params.row.img}`,
                 alt: params.row.name,
                 width: '135',
                 height: '86',
               },
               style: {
-                marginTop:'5px',
+                marginTop: '5px',
                 borderRadius: '4px',
               },
             })
@@ -223,7 +134,7 @@ export default {
         {
           title: 'ສີ',
           key: 'color',
-          width:'100',
+          width: '100',
           render: (h, params) => {
             return h('div', {
               style: {
@@ -238,14 +149,14 @@ export default {
         {
           title: 'ຍອດຂາຍ',
           key: 'value',
-          width:'150',
+          width: '150',
           render: (h, params) => {
             return h(
               'h4',
               {
                 style: {
                   borderRadius: '4px',
-                  color:params.row.color,
+                  color: params.row.color,
                 },
               },
               params.row.value
@@ -257,10 +168,26 @@ export default {
       myChartBar: null,
     }
   },
+  computed: {
+    setData() {
+      return this.type.map((typeItem) => {
+        const matchingVideo = this.video.find(
+          (videoItem) => videoItem.typeId === typeItem.typeId
+        )
+        return {
+          languageId: typeItem.languageId || '',
+          name: typeItem.name || '',
+          typeId: typeItem.typeId,
+          videoData: matchingVideo ? matchingVideo.videos.videoData : [],
+          value: matchingVideo ? matchingVideo.videos.videoData.length : 0,
+        }
+      })
+    },
+  },
   mounted() {
     this.initializeData()
-    this.createChart()
     this.initializeDataTable()
+    this.createChart()
   },
   methods: {
     rowClassName(row, index) {
@@ -270,37 +197,39 @@ export default {
       return 'odd-row'
     },
     initializeData() {
-      this.dataPie = this.data.map((item, index) => ({
+      this.dataPie = this.setData.map((item, index) => ({
         ...item,
         color: this.colorBK[index % this.colorBK.length],
       }))
     },
     initializeDataTable() {
-      this.dataVideo = this.dataTable.map((item, index) => ({
-        ...item,
-        color: this.colorBK[index % this.colorBK.length],
-      }))
+      const currentData = this.setData[this.tabItem]
+      if (currentData) {
+        this.dataVideo = currentData.videoData.map((video, index) => ({
+          ...video,
+          color: this.colorBK[index % this.colorBK.length],
+          value: video.views || 0,
+        }))
+      }
     },
     createChart() {
+      console.log('data-T:', this.setData)
       const ctx = document.getElementById('nyViewDoughnut').getContext('2d')
-
       if (this.myChartBar) {
         this.myChartBar.destroy()
       }
-
       const chartData = {
-        labels: this.data.map((item) => item.name),
+        labels: this.setData.map((item) => item.name),
         datasets: [
           {
             label: 'User Values',
-            data: this.data.map((item) => item.value),
+            data: this.setData.map((item) => item.value),
             backgroundColor: this.colorBK,
             borderColor: 'rgba(255, 255, 255)',
             borderWidth: 1,
           },
         ],
       }
-
       this.myChartBar = new Chart(ctx, {
         type: 'pie',
         data: chartData,
@@ -348,7 +277,6 @@ export default {
   },
 }
 </script>
-
 <style>
 .custom-font {
   font-family: 'Noto Sans Lao', sans-serif;
