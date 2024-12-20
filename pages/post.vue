@@ -27,12 +27,13 @@
               ? 'ເພີ່ມຂໍ້ມູນວີດີໂອ'
               : dialogPage === 0
               ? 'ເພີ່ມວີດີໂອ'
-              : 'ເເກ້ໄຂ້ຂໍ້ມູນ'
+              : 'ເເກ້ໄຂຂໍ້ມູນ'
           }}</v-card-title>
         </v-card-actions>
       </v-card>
       <AddSeriesMovie v-if="dialogPage === 0 && SeriesMovie === 504405213" />
       <DetailVideo v-else-if="dialogPage === 0 && !SeriesMovie !== 504405213" />
+      <UpdateVideo v-else-if="dialogPage === 1" />
       <PostPage v-else />
     </v-navigation-drawer>
     <v-dialog
@@ -211,22 +212,31 @@
                                     bkimage: item_video.bgImg,
                                     video:
                                       item_video.videoQualityinfodata ||
-                                      videoSeriesData,
+                                      item_video.videoSeriesData,
                                     time: item_video.time,
-                                    resolution: item_video.resolution,
+                                    resolution: item_video.videoQualityinfodata
+                                      ? item_video.videoQualityinfodata.map(
+                                          (q) => q.videoQualitydata.quality
+                                        )
+                                      : [],
                                   })
                                 "
                               >
                                 <v-img
                                   width="100%"
                                   height="100%"
-                                  :gradient="item_video.videoQualityinfodata?.length > 0 || item_video.videoSeriesData?.length > 0
-                                    ? null
-                                    : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'"
+                                  :gradient="
+                                    item_video.videoQualityinfodata?.length >
+                                      0 ||
+                                    item_video.videoSeriesData?.length > 0
+                                      ? null
+                                      : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'
+                                  "
                                   class="text-center"
                                   :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
                                     item_video.videoQualityinfodata?.length > 0
-                                      ? item_video.videoQualityinfodata[0]?.thumbnail
+                                      ? item_video.videoQualityinfodata[0]
+                                          ?.thumbnail
                                       : item_video.img
                                   }`"
                                   style="
@@ -282,9 +292,15 @@
                                         bkimage: item_video.bgImg,
                                         video:
                                           item_video.videoQualityinfodata ||
-                                          videoSeriesData,
+                                          item_video.videoSeriesData,
                                         time: item_video.time,
-                                        resolution: item_video.resolution,
+                                        resolution:
+                                          item_video.videoQualityinfodata
+                                            ? item_video.videoQualityinfodata.map(
+                                                (q) =>
+                                                  q.videoQualitydata.quality
+                                              )
+                                            : [],
                                       })
                                     "
                                   >
@@ -307,7 +323,13 @@
                                           item_video.videoQualityinfodata ||
                                           item_video.videoSeriesData,
                                         time: item_video.time,
-                                        resolution: item_video.resolution,
+                                        resolution:
+                                          item_video.videoQualityinfodata
+                                            ? item_video.videoQualityinfodata.map(
+                                                (q) =>
+                                                  q.videoQualitydata.quality
+                                              )
+                                            : [],
                                       })
                                     "
                                   >
@@ -381,9 +403,28 @@
                                             bkimage: item_video.bgImg,
                                             video:
                                               item_video.videoQualityinfodata ||
-                                              videoSeriesData,
+                                              item_video.videoSeriesData,
                                             time: item_video.time,
-                                            resolution: item_video.resolution,
+                                            resolution:
+                                              item_video.videoQualityinfodata
+                                                ? item_video.videoQualityinfodata.map(
+                                                    (q) =>
+                                                      q.videoQualitydata.quality
+                                                  )
+                                                : [],
+                                            previewImg:
+                                              item_video.videoDetailData
+                                                ? item_video.videoDetailData.map(
+                                                    (q) => q.previewImg
+                                                  )
+                                                : [],
+                                            category:
+                                              item_video.videoCategoryData
+                                                ? item_video.videoCategoryData.map(
+                                                    (q) =>
+                                                      Number(q.cateId) || null
+                                                  )
+                                                : [],
                                           })
                                           menu[index] = false
                                         "
@@ -408,17 +449,22 @@
                     </div>
                   </div>
                 </TabPane>
-                <TabPane
-                  v-if="searchvideo "
-                  label="ຄົ້ນຫາ"
-                  class="custom-font"
-                >
-                <div v-if="tabItem === 3" class="py-2 table-container-post scrollbar" style="height: 580px; overflow-y: auto;" >
-                  <v-card-text v-if="videosearch.length <= 0" width="100%" height="120px mt-12" class="text-center"><h3 class="custom-font">ບໍ່ພົບວີດີໂອທີ່ຄົນຫາ</h3></v-card-text>           
+                <TabPane v-if="searchvideo" label="ຄົ້ນຫາ" class="custom-font">
                   <div
-                      v-for="(item_video, index) in videosearch"
-                      :key="index"
+                    v-if="tabItem === 3"
+                    class="py-2 table-container-post scrollbar"
+                    style="height: 580px; overflow-y: auto"
+                  >
+                    <v-card-text
+                      v-if="videosearch.length <= 0"
+                      width="100%"
+                      height="120px mt-12"
+                      class="text-center"
+                      ><h3 class="custom-font">
+                        ບໍ່ພົບວີດີໂອທີ່ຄົນຫາ
+                      </h3></v-card-text
                     >
+                    <div v-for="(item, index) in videosearch" :key="index">
                       <div v-if="tabItem === filteredType.length">
                         <v-card-text class="pt-2 pb-2 pl-0 pr-3">
                           <v-row>
@@ -429,32 +475,35 @@
                                 class="hover-pointer"
                                 @click="
                                   selectMenu(false, 9, {
-                                    id: item_video.videoId,
-                                    title: item_video.name,
-                                    image: item_video.img,
-                                    des: item_video.description,
-                                    price: item_video.price,
-                                    type: item_video.typeId,
-                                    bkimage: item_video.bgImg,
+                                    id: item.videoId,
+                                    title: item.name,
+                                    image: item.img,
+                                    des: item.description,
+                                    price: item.price,
+                                    type: item.typeId,
+                                    bkimage: item.bgImg,
                                     video:
-                                      item_video.videoQualityinfodata ||
-                                      videoSeriesData,
-                                    time: item_video.time,
-                                    resolution: item_video.resolution,
+                                      item.videoQualityinfodata ||
+                                      item.videoSeriesData,
+                                    time: item.time,
+                                    resolution: item.resolution,
                                   })
                                 "
                               >
                                 <v-img
                                   width="100%"
                                   height="100%"
-                                  :gradient="item_video.videoQualityinfodata?.length > 0 || item_video.videoSeriesData?.length > 0
-                                    ? null
-                                    : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'"
+                                  :gradient="
+                                    item.videoQualityinfodata?.length > 0 ||
+                                    item.videoSeriesData?.length > 0
+                                      ? null
+                                      : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'
+                                  "
                                   class="text-center"
                                   :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
-                                    item_video.videoQualityinfodata?.length > 0
-                                      ? item_video.videoQualityinfodata[0]?.thumbnail
-                                      : item_video.img
+                                    item.videoQualityinfodata?.length > 0
+                                      ? item.videoQualityinfodata[0]?.thumbnail
+                                      : item.img
                                   }`"
                                   style="
                                     display: flex;
@@ -472,9 +521,8 @@
                                     "
                                   >
                                     {{
-                                      item_video.videoQualityinfodata?.length >
-                                        0 ||
-                                      item_video.videoSeriesData?.length > 0
+                                      item.videoQualityinfodata?.length > 0 ||
+                                      item.videoSeriesData?.length > 0
                                         ? 'mdi-play'
                                         : 'mdi-download'
                                     }}
@@ -488,8 +536,16 @@
                                       color: #fff;
                                     "
                                   >
-                                    {{ item_video.time }}
+                                    {{ item.time }}
                                   </span>
+                                  <v-card
+                                    flat
+                                    class="filtered-name-card-triangle"
+                                  >
+                                    <span class="triangle-text">
+                                      {{ getFilteredName(item.typeId) }}
+                                    </span>
+                                  </v-card>
                                 </v-img>
                               </v-card>
                             </v-col>
@@ -500,22 +556,22 @@
                                     class="custom-font hover-pointer"
                                     @click="
                                       selectMenu(false, 9, {
-                                        id: item_video.videoId,
-                                        title: item_video.name,
-                                        image: item_video.img,
-                                        des: item_video.description,
-                                        price: item_video.price,
-                                        type: item_video.typeId,
-                                        bkimage: item_video.bgImg,
+                                        id: item.videoId,
+                                        title: item.name,
+                                        image: item.img,
+                                        des: item.description,
+                                        price: item.price,
+                                        type: item.typeId,
+                                        bkimage: item.bgImg,
                                         video:
-                                          item_video.videoQualityinfodata ||
-                                          videoSeriesData,
-                                        time: item_video.time,
-                                        resolution: item_video.resolution,
+                                          item.videoQualityinfodata ||
+                                          item.videoSeriesData,
+                                        time: item.time,
+                                        resolution: item.resolution,
                                       })
                                     "
                                   >
-                                    {{ item_video.name }}
+                                    {{ item.name }}
                                   </span>
                                 </h3>
                                 <v-card-text class="pa-0 custom-font">
@@ -523,26 +579,24 @@
                                     class="custom-font hover-pointer"
                                     @click="
                                       selectMenu(false, 9, {
-                                        id: item_video.videoId,
-                                        title: item_video.name,
-                                        image: item_video.img,
-                                        des: item_video.description,
-                                        price: item_video.price,
-                                        type: item_video.typeId,
-                                        bkimage: item_video.bgImg,
+                                        id: item.videoId,
+                                        title: item.name,
+                                        image: item.img,
+                                        des: item.description,
+                                        price: item.price,
+                                        type: item.typeId,
+                                        bkimage: item.bgImg,
                                         video:
-                                          item_video.videoQualityinfodata ||
-                                          item_video.videoSeriesData,
-                                        time: item_video.time,
-                                        resolution: item_video.resolution,
+                                          item.videoQualityinfodata ||
+                                          item.videoSeriesData,
+                                        time: item.time,
+                                        resolution: item.resolution,
                                       })
                                     "
                                   >
                                     <div
                                       v-html="
-                                        truncatedDescription(
-                                          item_video.description
-                                        )
+                                        truncatedDescription(item.description)
                                       "
                                     ></div>
                                   </span>
@@ -599,18 +653,18 @@
                                         :key="item_index"
                                         @click="
                                           selectMenu(false, item_index, {
-                                            id: item_video.videoId,
-                                            title: item_video.name,
-                                            image: item_video.img,
-                                            des: item_video.description,
-                                            price: item_video.price,
-                                            type: item_video.typeId,
-                                            bkimage: item_video.bgImg,
+                                            id: item.videoId,
+                                            title: item.name,
+                                            image: item.img,
+                                            des: item.description,
+                                            price: item.price,
+                                            type: item.typeId,
+                                            bkimage: item.bgImg,
                                             video:
-                                              item_video.videoQualityinfodata ||
-                                              videoSeriesData,
-                                            time: item_video.time,
-                                            resolution: item_video.resolution,
+                                              item.videoQualityinfodata ||
+                                              item.videoSeriesData,
+                                            time: item.time,
+                                            resolution: item.resolution,
                                           })
                                           menu[index] = false
                                         "
@@ -641,7 +695,11 @@
                 class="pa-0"
                 style="position: absolute; bottom: 18px; right: 25px"
               >
-                <ShowPage :total="NumberPage" :page="currentPage" @updatePage="handlePageUpdate"/>
+                <ShowPage
+                  :total="NumberPage"
+                  :page="currentPage"
+                  @updatePage="handlePageUpdate"
+                />
                 <v-icon
                   outlined
                   class="custom-button"
@@ -672,7 +730,7 @@ export default {
       currentPage: 1,
       tabItem: 0,
       NumberPage: 25,
-      searchvideo:false,
+      searchvideo: false,
       modal: false,
       modalactive: false,
       select: false,
@@ -688,7 +746,7 @@ export default {
       tabs: [],
       menu: [false, false, false],
       itemsMenu: [
-        { title: 'ລາຍລະອຽດ', icon: 'mdi-movie-open-plus' },
+        { title: 'ຄວາມລະອຽດ', icon: 'mdi-movie-open-plus' },
         { title: 'ເເກ້ໄຂ', icon: 'mdi-movie-edit' },
         { title: 'ປິດຂາຍ', icon: 'mdi-movie-off' },
         { title: 'ລົບວີດີໂອ', icon: 'mdi-delete' },
@@ -703,17 +761,14 @@ export default {
       return this.$store.state.active
     },
     filteredType() {
-      return this.tabs.filter((item) => item.languageId === '1002')
+      return this.tabs.filter(
+        (item) => item.languageId === this.tabs[1].languageId
+      )
     },
     paginatedVideos() {
       const endIndex = this.currentPage * 5
       const startIndex = endIndex - 5
-      return (
-        this.video[this.tabItem]?.videos?.videoData.slice(
-          startIndex,
-          endIndex
-        ) || []
-      )
+      return this.video[this.tabItem]?.videos.slice(startIndex, endIndex) || []
     },
     truncatedDescription() {
       return (description) =>
@@ -724,6 +779,10 @@ export default {
     this.filterMoviesByType()
   },
   methods: {
+    getFilteredName(typeId) {
+      const match = this.filteredType.find((type) => type.typeId === typeId)
+      return match ? match.name : 'Unknown'
+    },
     addVideo() {
       this.handleMenuItemClick(true)
       this.rightDrawer = true
@@ -735,10 +794,10 @@ export default {
     //   this.SeriesMovie = 504405213;
     // },
     async searchVideo() {
-      if(this.search && this.search !== ''){
-        this.tabItem = this.filteredType.length;
-        this.loading = true;
-        this.searchvideo = true;
+      if (this.search && this.search !== '') {
+        this.tabItem = this.filteredType.length
+        this.loading = true
+        this.searchvideo = true
         try {
           const response = await this.$axios.post(
             'http://172.28.17.102:2024/video/searchVideoWithAllCategory?pageNo=1&pageSize=250',
@@ -746,70 +805,30 @@ export default {
               videoName: this.search,
             }
           )
-          this.videosearch = response.data.detail.data || [];
-          console.log('Search-response:', this.videosearch)
-          console.log('video:',this.video)
+          this.videosearch = response.data.detail.data || []
+          // console.log('Search-response:', this.videosearch)
+          // console.log('video:',this.video)
         } catch (error) {
           console.error('Error fetching data:', error)
         }
-      }
-      else {
+      } else {
         this.messageModal('error', 'ຂໍ້ມູນຫວ່າງເປົ່າ')
       }
-      this.loading = false;
+      this.loading = false
     },
     selectMenu(active, menu, videoDetails) {
-      const {
-        id,
-        title,
-        image,
-        des,
-        price,
-        type,
-        bkimage,
-        video,
-        time,
-        resolution,
-      } = videoDetails
+      const { id, title, type } = videoDetails
+      // console.log('data-::',this.video)
       if (menu === 0) {
-        if((videoDetails.video.length > 0) && (videoDetails.type !== 504405213)){
-          this.messageModal('success', 'ເພີ່ມວີດີໂອສໍາເລັດ.');
-        }
-        else {
-          this.SeriesMovie = type
-          this.name = title
-          this.handleMenuItemClick(
-            active,
-            id,
-            title,
-            image,
-            des,
-            price,
-            type,
-            bkimage,
-            video,
-            time,
-            resolution
-          )
-          this.select = false
-          this.rightDrawer = true
-        }
+        this.SeriesMovie = type
+        this.name = title
+        this.handleMenuItemClick(active, videoDetails)
+        this.select = false
+        this.rightDrawer = true
       } else if (menu === 1) {
-          this.messageModal('error', 'ຍັງບໍ່ສາມາດແກ້ໄຂວີດີໂອໄດ້.')
-          // this.handleMenuItemClick(
-          //   active,
-          //   id,
-          //   title,
-          //   image,
-          //   des,
-          //   price,
-          //   type,
-          //   bkimage,
-          //   video,
-          //   time,
-          //   resolution
-          // )
-          // this.rightDrawer = true
+        // this.messageModal('error', 'ຍັງບໍ່ສາມາດແກ້ໄຂວີດີໂອໄດ້.')
+        this.handleMenuItemClick(active, videoDetails)
+        this.rightDrawer = true
       } else if (menu === 2) {
         this.idVideo = id
         this.modalactive = true
@@ -825,19 +844,7 @@ export default {
         if (menu === 9) {
           return this.messageModal('error', 'ຍັງບໍ່ສາມາດເບີ່ງວີດີໂອໄດ້.')
         } else {
-          this.handleMenuItemClick(
-            active,
-            id,
-            title,
-            image,
-            des,
-            price,
-            type,
-            bkimage,
-            video,
-            time,
-            resolution
-          )
+          this.handleMenuItemClick(active, videoDetails)
           this.select = true
           this.rightDrawer = false
         }
@@ -854,33 +861,9 @@ export default {
       this.rightDrawer = false
       this.$store.commit('SET_STEP_ADD_VIDEO', 0)
     },
-    handleMenuItemClick(
-      active,
-      id,
-      title,
-      image,
-      des,
-      price,
-      type,
-      bkimage,
-      video,
-      time,
-      resolution
-    ) {
-      const updatedForm = {
-        id,
-        title,
-        time,
-        image,
-        des,
-        price,
-        type,
-        bkimage,
-        video,
-        resolution,
-      }
+    handleMenuItemClick(active, videoDetails) {
       const updatedActive = active
-      this.$store.commit('SET_FORM', updatedForm)
+      this.$store.commit('SET_FORM', videoDetails)
       this.$store.commit('SET_ACTIVE', updatedActive)
       this.$store.commit('SET_ACTIVE_IMG', updatedActive)
       this.$store.commit('SET_ACTIVE_BKIMG', updatedActive)
@@ -929,7 +912,7 @@ export default {
           }
         )
         this.video = response.data.detail?.data || []
-        // console.log('video:',this.video)
+        console.log('video :=', this.video)
       } catch (error) {
         console.error('Error fetching videos by type:', error)
       }
@@ -971,24 +954,19 @@ export default {
 .custom-font {
   font-family: 'Noto Sans Lao', sans-serif;
 }
-
 .hover-pointer {
   cursor: pointer;
   background-color: none;
 }
-
 .outlined {
   outline: none;
 }
-
 .outlined:hover {
   outline: 2px solid rgb(179, 179, 0);
 }
-
 .BK-color {
   background-color: rgb(255, 215, 0);
 }
-
 .color-text {
   color: #ffff;
 }
@@ -997,26 +975,21 @@ export default {
   scrollbar-width: thin;
   overflow-y: auto;
 }
-
 .table-container-post ::-webkit-scrollbar {
   width: 2px;
   height: 2px;
 }
-
 .table-container-post ::-webkit-scrollbar-thumb {
   background-color: rgb(255, 200, 0);
   border-radius: 4px;
 }
-
 .table-container-post ::-webkit-scrollbar-thumb:hover {
   background-color: rgb(255, 200, 0);
 }
-
 .table-container-post ::-webkit-scrollbar-corner {
   background-color: rgb(255, 200, 0);
   border-radius: 4px;
 }
-
 .table-container-add ::-webkit-scrollbar {
   width: 0px;
   height: 4px;
@@ -1025,7 +998,6 @@ export default {
   background-color: rgb(255, 204, 0);
   border-radius: 2px;
 }
-
 .table-container-add ::-webkit-scrollbar-corner {
   background-color: rgb(255, 204, 0);
   border-radius: 1px;
@@ -1033,35 +1005,28 @@ export default {
 .scrollbar {
   overflow-x: hidden;
 }
-
 .scrollbar::-webkit-scrollbar {
   width: 0px;
   height: 2px;
 }
-
 .scrollbar::-webkit-scrollbar-thumb {
   background-color: rgb(255, 204, 0);
 }
 .color-hover {
   color: none;
 }
-
 .color-hover:hover {
   color: rgb(255, 215, 0);
 }
-
 .color-red {
   color: #ed4014;
 }
-
 .color-grad {
   background-color: rgb(255, 255, 240);
 }
-
 .colo-with {
   background-color: #ffff;
 }
-
 .color-post {
   background-color: rgb(250, 250, 250);
 }
@@ -1078,5 +1043,25 @@ export default {
 .mouse-hover-menu:hover {
   background-color: rgb(255, 215, 0);
   color: #ffff;
+}
+.filtered-name-card-triangle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 46px;
+  height: 46px;
+  padding-bottom: 18px;
+  padding-right: 22px;
+  background-color: rgba(0, 0, 0, 0.7);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.triangle-text {
+  color: white;
+  font-style: italic;
+  transform: rotate(-45deg);
+  font-size: 12px;
 }
 </style>

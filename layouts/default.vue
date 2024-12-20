@@ -75,6 +75,11 @@ export default {
           title: 'ໂພດ',
           to: '/post',
         },
+        // {
+        //   icon: 'mdi-post-outline',
+        //   title: 'Update',
+        //   to: '/update',
+        // },
       ],
       miniVariant: false,
     }

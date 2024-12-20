@@ -94,7 +94,6 @@ export default {
       this.showPassword = !this.showPassword;
     },
     async checkrequired() {
-      console.log(this.email, this.password)
       try {
         const response = await this.$auth.loginWith('local', {
           data: {

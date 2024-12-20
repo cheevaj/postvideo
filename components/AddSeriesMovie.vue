@@ -8,22 +8,33 @@
         <v-img
           width="100%"
           height="250px"
-          :src="isFile(form.image) ? playURL(form.image) : `https://apicenter.laotel.com:9443/tplussocial?img=${form.image || ''}`"
+          :src="
+            isFile(form.image)
+              ? playURL(form.image)
+              : `https://apicenter.laotel.com:9443/tplussocial?img=${
+                  form.image || ''
+                }`
+          "
         />
       </v-card>
     </v-card-text>
     <v-card-text class="px-0 py-0" style="padding: 12px">
       <v-stepper
-      v-model="e1"
-      flat
-      class="px-4 py-0"
-      style="background-color: transparent"
+        v-model="e1"
+        flat
+        class="px-4 py-0"
+        style="background-color: transparent"
       >
-      <v-stepper-items class="pa-0">
+        <v-stepper-items class="pa-0">
           <br />
           <v-stepper-content step="1" class="pa-0">
             <h3 class="custom-font px-3">ຕອນຂອງຊີລີ່</h3>
-            <v-card outlined class="pa-2 custom-margin text-center" min-height="210px" style="background-color: rgb(248, 248, 248);">
+            <v-card
+              outlined
+              class="pa-2 custom-margin text-center"
+              min-height="210px"
+              style="background-color: rgb(248, 248, 248)"
+            >
               <v-card-text class="pa-2">
                 <v-row>
                   <v-col
@@ -46,7 +57,11 @@
                         :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
                           items.img || ''
                         }`"
-                        :gradient="items.VideoSeriesQualityInfo.length > 0 ? null : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'"
+                        :gradient="
+                          items.videoSeriesQualityInfo.length > 0
+                            ? null
+                            : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'
+                        "
                         style="
                           display: flex;
                           align-items: center;
@@ -63,7 +78,7 @@
                           "
                         >
                           {{
-                            items.VideoSeriesQualityInfo.length > 0
+                            items.videoSeriesQualityInfo.length > 0
                               ? 'mdi-play'
                               : 'mdi-download'
                           }}
@@ -79,38 +94,51 @@
                             border-radius: 2px;
                           "
                         >
-                          EP.{{ items.name }}
+                          {{ items.name }}
                         </v-card>
                       </v-img>
                     </v-card>
                   </v-col>
-                  <v-col v-if="epOfSeries.length <= 0" cols="3" class="px-1 py-2" style="
-                          border-radius: 18px;
-                          margin-top: 0px;
-                          display: flex;
-                          align-items: center;
-                        ">
-                      <v-card
-                        class="custom-btn hover-pointer"
-                        height="55"
-                        width="55"
-                        style="
-                          background-color: #ffff;
-                          border: 1px solid #ffff;
-                          border-radius: 18px;
-                          margin-top: 0px;
-                          display: flex;
-                          align-items: center;
-                          justify-content: center;
-                        "
-                        @click="nextStep(2, 0)"
+                  <v-col
+                    v-if="epOfSeries.length <= 0"
+                    cols="3"
+                    class="px-1 py-2"
+                    style="
+                      border-radius: 18px;
+                      margin-top: 0px;
+                      display: flex;
+                      align-items: center;
+                    "
+                  >
+                    <v-card
+                      class="custom-btn hover-pointer"
+                      height="55"
+                      width="55"
+                      style="
+                        background-color: #ffff;
+                        border: 1px solid #ffff;
+                        border-radius: 18px;
+                        margin-top: 0px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      "
+                      @click="nextStep(2, 0)"
+                    >
+                      <v-icon color="rgb(128, 128, 128)" size="32"
+                        >mdi-movie-open-plus</v-icon
                       >
-                        <v-icon color="rgb(128, 128, 128)" size="32">mdi-movie-open-plus</v-icon>
-                      </v-card>
+                    </v-card>
                   </v-col>
                 </v-row>
               </v-card-text>
-              <h2 v-if="epOfSeries.length <= 0" class="custom-font" style="color: #a6a6a6;">ຍັງບໍ່ມີວີດີໂອ</h2>
+              <h2
+                v-if="epOfSeries.length <= 0"
+                class="custom-font"
+                style="color: #a6a6a6"
+              >
+                ຍັງບໍ່ມີວີດີໂອ
+              </h2>
             </v-card>
             <v-card-actions>
               <v-spacer />
@@ -123,6 +151,7 @@
                 <v-icon size="18">mdi-plus</v-icon>ເພີ່ມ Ep
               </v-btn>
             </v-card-actions>
+            <br />
           </v-stepper-content>
           <v-stepper-content step="2" class="pa-0">
             <v-card-text class="py-2 px-3">
@@ -168,7 +197,7 @@
                     <v-img
                       :src="playURL(newForm.image)"
                       style="
-                        width: 100%;
+                        width: 560px;
                         height: 310px;
                         border-radius: 8px;
                         border: 1px solid rgb(166, 166, 166);
@@ -323,10 +352,17 @@
                           v-for="(item, index) in resolution"
                           :value="item.qualityId"
                           :key="index"
-                          class="custom-font mouse-hover-menu"
-                          style="width: 150px"
+                          :disabled="item.active"
+                          class="custom-font"
+                          :class="{ 'mouse-hover-menu': !item.active }"
+                          style="width: 150px; text-align: center"
                         >
-                          {{ item.quality }}
+                          {{ item.quality }}&nbsp;&nbsp;
+                          <span>
+                            <v-icon :color="item.active ? '#cccccc' : 'transparent'">
+                              mdi-play-protected-content
+                            </v-icon>
+                          </span>
                         </Option>
                       </Select>
                     </v-card>
@@ -448,27 +484,34 @@ export default {
   },
   methods: {
     isFile(value) {
-      return value instanceof File;
+      return value instanceof File
     },
     nextStep(value, SVideoId) {
-      if(value === 3){
-        if(SVideoId.VideoSeriesQualityInfo.length > 0){
-          this.messageModal('success');
+      // this.resolution
+      const UpdateResolution = SVideoId.videoSeriesQualityInfo
+        ? SVideoId.videoSeriesQualityInfo.map(
+            (item) => item.SVideoQualityInfoData.quality
+          )
+        : []
+      this.resolution = this.resolution.map((item) => {
+        return {
+          ...item,
+          active: UpdateResolution.includes(item.quality),
         }
-        else {
-          this.e1 = this.e1 === 3 ? 1 : value
-          this.epSVideoId = SVideoId === 0 ? {} : SVideoId
-        }
-      }
-      else {
+      })
+      if (value === 3) {
+        this.e1 = this.e1 === 3 ? 1 : value
+        this.epSVideoId = SVideoId === 0 ? {} : SVideoId
+      } else {
         this.e1 = this.e1 === 3 ? 1 : value
         this.epSVideoId = SVideoId === 0 ? {} : SVideoId
       }
-      console.log('SrID:', this.epSVideoId)
+      // console.log('SrID:', this.epSVideoId)
     },
     async getData() {
-      // console.log('Video ID', this.form)
+      // console.log('Video', this.form)
       const id = this.form.id
+      // console.log('Video ID', id)
       const apiCalls = [
         this.$axios.post('http://172.28.17.102:2024/video/getallvideoquality'),
         this.$axios.post('http://172.28.17.102:2024/video/getallvideoseries', {
@@ -478,9 +521,14 @@ export default {
       try {
         const responses = await Promise.all(apiCalls)
         const [resolution, EPvideo] = responses
-        this.resolution = resolution.data.detail || []
+        this.resolution = resolution.data.detail.map((item) => {
+          return {
+            ...item,
+            active: false,
+          }
+        })
         this.epOfSeries = EPvideo.data.detail || []
-        console.log(this.epOfSeries)
+        // console.log(this.epOfSeries)
       } catch (error) {
         if (error.response) {
           console.error('Error response:', error.response.data)
@@ -523,12 +571,18 @@ export default {
       this.$store.commit('SET_FORM', updatedForm)
     },
     async addVideoSeries() {
+      console.log(
+        'dataAdd - ser::',
+        this.newForm,
+        'ID-Ep.::',
+        this.epSVideoId.SVideoId
+      )
       const { image, video, resolution } = this.newForm
       if (!video || !image || !resolution) {
         this.messageModal('error')
         return
       }
-      const id = this.form.id
+      const id = this.epSVideoId.SVideoId
       const formData = new FormData()
       if (video) {
         formData.append('name', video)
@@ -538,12 +592,12 @@ export default {
       }
       const videoData = JSON.stringify({
         qualityId: resolution || '',
-        videoId: id || '',
+        SVideoId: id || '',
       })
       formData.append('videoData', videoData)
       try {
         const response = await this.$axios.post(
-          'http://172.28.17.102:2024/video/addvideoqualityinfo',
+          'http://172.28.17.102:2024/video/addseries',
           formData,
           {
             headers: {
@@ -554,12 +608,13 @@ export default {
         console.log('Data response:', response)
         this.messageModal('success')
         this.$store.commit('SET_STEP_ADD_VIDEO', 0)
-        // this.resetValue();
+        this.resetValue()
       } catch (error) {
         console.error(
           'Error fetching data:',
           error.response ? error.response.data : error.message
         )
+        this.this.messageModal('error')
       }
     },
     async addEpOfSeries() {
@@ -595,6 +650,7 @@ export default {
           'Error fetching data:',
           error.response ? error.response.data : error.message
         )
+        this.messageModal('error')
       }
     },
     resetValue() {

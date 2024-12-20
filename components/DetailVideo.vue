@@ -85,10 +85,17 @@
                   v-for="(item, index) in resolution"
                   :value="item.qualityId"
                   :key="index"
-                  class="custom-font mouse-hover-menu"
-                  style="width: 150px"
+                  :disabled="item.active"
+                  class="custom-font"
+                  :class="{ 'mouse-hover-menu': !item.active }"
+                  style="width: 150px; text-align: center;"
                 >
-                  {{ item.quality }}
+                  {{ item.quality }}&nbsp;&nbsp;
+                  <span>
+                    <v-icon :color="item.active ? '#cccccc' : 'transparent'">
+                      mdi-play-protected-content
+                    </v-icon>
+                  </span>
                 </Option>
               </Select>
             </v-card>
@@ -148,9 +155,9 @@
           width="100%"
           height="50"
           class="custom-font color-text custom-btn"
-          style="background-color: rgb(255, 215, 0);"
+          style="background-color: rgb(255, 215, 0)"
           @click="addVideoMovie"
-          >
+        >
           <!-- style="background-color: rgb(255, 215, 0); display: flex; position: fixed; bottom: 20px;" -->
           <h2>ເພີ່ມ</h2>
         </v-btn>
@@ -164,7 +171,7 @@ export default {
   name: 'ViewPage',
   data() {
     return {
-      newForm: { image: null, video: null, resolution: 0, },
+      newForm: { image: null, video: null, resolution: 0 },
       resolution: [],
     }
   },
@@ -174,7 +181,7 @@ export default {
     },
   },
   mounted() {
-    this.getData();
+    this.getData()
   },
   methods: {
     async getData() {
@@ -184,7 +191,12 @@ export default {
       try {
         const responses = await Promise.all(apiCalls)
         const [resolution] = responses
-        this.resolution = resolution.data.detail || []
+        this.resolution = resolution.data.detail.map((item) => {
+          return {
+            ...item,
+            active: this.form.resolution.includes(item.quality),
+          }
+        })
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -224,22 +236,21 @@ export default {
       const updatedForm = {
         title: '',
         des: '',
-        price: 0,
         type: '',
         bkimage: null,
         image: null,
         reduced: 0,
         category: [],
       }
-      this.$store.commit('SET_FORM', updatedForm);
+      this.$store.commit('SET_FORM', updatedForm)
     },
     async addVideoMovie() {
-      const { image, video , resolution} = this.newForm;
-      if ( !video || !image || !resolution ) {
-        this.messageModal('error');
-        return;
+      const { image, video, resolution } = this.newForm
+      if (!video || !image || !resolution) {
+        this.messageModal('error')
+        return
       }
-      const id = this.form.id;
+      const id = this.form.id
       const formData = new FormData()
       if (video) {
         formData.append('name', video)
@@ -263,10 +274,10 @@ export default {
           }
         )
         console.log('Data response:', response)
-        this.messageModal('success');
-        this.$store.commit('SET_STEP_ADD_VIDEO', 0);
-        this.resetValue();
-        this.newForm = {image: null,video: null,resolution: 0,};
+        this.messageModal('success')
+        this.$store.commit('SET_STEP_ADD_VIDEO', 0)
+        this.resetValue()
+        this.newForm = { image: null, video: null, resolution: 0 }
       } catch (error) {
         console.error(
           'Error fetching data:',
@@ -281,13 +292,15 @@ export default {
           type === 'success' ? 'ເພີ່ມວີດີໂອສໍາເລັດ.' : 'ເພີ່ມວີດີໂອບໍ່ສໍາເລັດ.'
         }<span>`,
       })
-      if(type === 'error'){this.errorMessage()};
+      if (type === 'error') {
+        this.errorMessage()
+      }
     },
     errorMessage() {
       this.$Notice.error({
         title: `<span class="custom-font">${'ຂໍ້ມູນວ່າງ'}</span>`,
         desc: `<span class="custom-font">${'ກະລຸນາກວດເບິ່ງລາຍລະອຽດຂໍ້ມູນທັງໝົດແລະລອງໃໝ່ອີກຄັ້ງ.'}</span>`,
-      });
+      })
     },
   },
 }

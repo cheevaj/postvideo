@@ -199,6 +199,7 @@
                 <Poptip trigger="focus">
                   <Input
                     v-model="localForm.price"
+                    disabled
                     prefix="logo-usd"
                     type="number"
                     placeholder="ປ້ອມລາຄາ"
@@ -228,14 +229,14 @@
                       : 'ເລືອກປະເພດວີດີໂອ'
                   "
                   class="custom-font"
-                  style="width: 200px"
+                  style="width: 200px;"
                 >
                   <Option
                     v-for="(item, index) in filteredType"
                     :value="item.typeId"
                     :key="index"
                     class="custom-font mouse-hover-menu"
-                    style="width: 150px"
+                    style="width: 150px; text-align: center;"
                   >
                     {{ item.name }}
                   </Option>
@@ -319,6 +320,7 @@
                 <Poptip trigger="focus">
                   <Input
                     v-model="localForm.reduced"
+                    disabled
                     prefix="logo-usd"
                     type="number"
                     placeholder="ປ້ອມສ່ອນຫຼຸດ"
@@ -350,14 +352,14 @@
                       : 'ເລືອກໝອດໝູ່ວີດີໂອ'
                   "
                   class="custom-font"
-                  style="width: 200px"
+                  style="width: 200px;"
                 >
                   <Option
                     v-for="(item, index) in filteredCategory"
                     :value="item.cateId"
                     :key="index"
                     class="custom-font mouse-hover-menu"
-                    style="width: 150px"
+                    style="width: 150px; text-align: center;"
                     >{{ item.name }}</Option
                   >
                   <v-divider style="width: 150px"></v-divider>
@@ -482,10 +484,10 @@ export default {
   },
   computed: {
     filteredCategory() {
-      return this.category.filter((item) => item.languageId === '1002')
+      return this.category.filter((item) => item.languageId === this.category[1].languageId)
     },
     filteredType() {
-      return this.itemsType.filter((item) => item.languageId === '1002')
+      return this.itemsType.filter((item) => item.languageId === this.itemsType[1].languageId)
     },
     form() {
       return this.$store.state.form
@@ -628,16 +630,16 @@ export default {
     },
     async addVideo() {
       const { title, des, price, type, bkimage, image, reduced, category } =
-        this.localForm
+        this.localForm;
+        console.log(price , reduced)
       if (
         !title ||
         !des ||
-        !price ||
+        // !price ||
         !type ||
         !bkimage ||
         !image ||
-        !reduced ||
-        !reduced ||
+        // !reduced ||
         !Array.isArray(category) ||
         !category.length
       ) {
@@ -661,7 +663,7 @@ export default {
         description: des || '',
         // price: price || "",
         typeId: type || '',
-        // reduced: reduced || ""
+        // reduced: reduced || "" 
       })
       formData.append('videoData', videoData)
       if (Array.isArray(category)) {
@@ -688,9 +690,10 @@ export default {
           type: type || '',
           image:image || null,
         }
-        console.log('valueE:', this.dataVideo);
-        console.log('valueE:', typeof(this.dataVideo.image));
+        // console.log('valueE:', this.dataVideo);
+        // console.log('valueE:', typeof(this.dataVideo.image));
         this.typeofID = type;
+        this.deleteFrom();
         this.messageModal('success');
       } catch (error) {
         console.error(
