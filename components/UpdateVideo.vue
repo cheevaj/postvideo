@@ -257,7 +257,7 @@
               <v-spacer />
               <h3 class="custom-font">ໝອດໝູ່:</h3>
               &nbsp;
-              <v-card flat width="200" class="pa-0 border-input">
+               <v-card flat width="200" class="pa-0 border-input">
                 <Select
                   v-model="localFormUpdate.category"
                   multiple
@@ -279,19 +279,7 @@
                     style="width: 150px; text-align: center"
                     >{{ item.name }}</Option
                   >
-                  <v-divider style="width: 150px"></v-divider>
-                  <v-btn
-                    class="custom-font mouse-hover-menu py-1 my-1 px-1"
-                    disabled
-                    style="width: 150px; height: 100%"
-                  >
-                    <v-icon>mdi-plus-circle</v-icon>&nbsp;<span
-                      class="custom-font"
-                      >ເພີ່ມໝອດໝູ່ວີດີໂອ</span
-                    >
-                  </v-btn>
                 </Select>
-                {{ localFormUpdate.category }}
               </v-card>
             </v-card-actions>
           </v-col>
@@ -546,21 +534,21 @@ export default {
      updateVideoForm() {
       console.log("Update - 1 ::" , this.localFormUpdate)
       console.log('viewVideo::',this.imageview)
-      // const { title, des, type, bkimage, image, category } = this.localFormUpdate
-      // if (
-      //   !title ||
-      //   !des ||
-      //   // !price ||
-      //   !type ||
-      //   !bkimage ||
-      //   !image ||
-      //   // !reduced ||
-      //   !Array.isArray(category) ||
-      //   !category.length
-      // ) {
-      //   this.messageModal('error')
-      //   return
-      // }
+      const { title, des, type, bkimage, image, category } = this.localFormUpdate
+      if (
+        !title ||
+        !des ||
+        // !price ||
+        !type ||
+        !bkimage ||
+        !image ||
+        // !reduced ||
+        !Array.isArray(category) ||
+        !category.length
+      ) {
+        
+        return this.messageModal('error');
+      }
       // const formData = new FormData()
       // if (bkimage) {
       //   formData.append('bgImg', bkimage)

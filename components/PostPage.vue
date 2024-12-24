@@ -445,6 +445,18 @@
       > 
         <h2>ເພີ່ມ</h2>
       </v-btn>
+
+
+      <v-btn
+        width="100%"
+        height="50"
+        class="custom-font color-text custom-btn"
+        style="background-color: rgb(255, 215, 0)"
+        @click="dialog = true"
+      > 
+        <h2>Video</h2>
+      </v-btn>
+
     </v-card-text>
     <v-card-text v-else class="px-3 py-0">
       <AddSeriesMovie v-if="(setStep === '504405213') || (setStep === 504405213)"/>
@@ -465,7 +477,7 @@ export default {
       loading: false,
       isHovered: false,
       itemsType: [],
-      localForm: { ...this.$store.state.form, category: [] },
+      localForm: { ...this.$store.state.form, category: [], image:null, bkimage: null },
       category: [],
       editorOptions: {
         theme: 'snow',
@@ -509,14 +521,14 @@ export default {
   }
   },
   mounted() {
-    this.localForm = { ...this.form, category: [] }
+    this.localForm = { ...this.form, category: [], image:null, bkimage:null,  }
     this.dataResponseAll()
   },
   watch: {
     form: {
       immediate: true,
       handler(newForm) {
-        this.localForm = { ...newForm, category: [] }
+        this.localForm = { ...newForm, category: [], image:null, bkimage:null, }
       },
     },
   },
@@ -547,21 +559,21 @@ export default {
       this.editType = !this.editType
     },
     deleteFrom() {
-      this.localForm = { category: [] }
+      this.localForm = { category: [], resolution:[] }
     },
-    handleMenuItemClick(id, title, image, des, price, type, bkimage) {
-      // console.log(this.localForm)
-      const updatedForm = {
-        id,
-        title,
-        image,
-        des,
-        price,
-        type,
-        bkimage,
-      }
-      this.$store.commit('SET_FORM', updatedForm)
-    },
+    // handleMenuItemClick(id, title, image, des, price, type, bkimage) {
+    //   // console.log(this.localForm)
+    //   const updatedForm = {
+    //     id,
+    //     title,
+    //     image,
+    //     des,
+    //     price,
+    //     type,
+    //     bkimage,
+    //   }
+    //   this.$store.commit('SET_FORM', updatedForm)
+    // },
     handleImageUpload(image) {
       if (image && image.size > 0) {
         const updatedActive = true
@@ -609,6 +621,7 @@ export default {
     },
     AddValueVideo() {
       const updatedForm = this.dataVideo
+      console.log('Data-video::', updatedForm)
       this.$store.commit('SET_FORM', updatedForm);
       this.$store.commit('SET_STEP_ADD_VIDEO', this.typeofID);
       this.reSetValue();
@@ -623,6 +636,7 @@ export default {
         bkimage: null,
         image: null,
         reduced: 0,
+        resolution:[],
         category: [],
       }
       this.imageview = []
@@ -689,6 +703,7 @@ export default {
           des: des || '',
           type: type || '',
           image:image || null,
+
         }
         // console.log('valueE:', this.dataVideo);
         // console.log('valueE:', typeof(this.dataVideo.image));
