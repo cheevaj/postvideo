@@ -445,18 +445,6 @@
       > 
         <h2>ເພີ່ມ</h2>
       </v-btn>
-
-
-      <v-btn
-        width="100%"
-        height="50"
-        class="custom-font color-text custom-btn"
-        style="background-color: rgb(255, 215, 0)"
-        @click="dialog = true"
-      > 
-        <h2>Video</h2>
-      </v-btn>
-
     </v-card-text>
     <v-card-text v-else class="px-3 py-0">
       <AddSeriesMovie v-if="(setStep === '504405213') || (setStep === 504405213)"/>
@@ -559,7 +547,7 @@ export default {
       this.editType = !this.editType
     },
     deleteFrom() {
-      this.localForm = { category: [], resolution:[] }
+      this.localForm = { category: [], }
     },
     // handleMenuItemClick(id, title, image, des, price, type, bkimage) {
     //   // console.log(this.localForm)
@@ -636,20 +624,18 @@ export default {
         bkimage: null,
         image: null,
         reduced: 0,
-        resolution:[],
         category: [],
       }
       this.imageview = []
       this.dialog = false
     },
     async addVideo() {
-      const { title, des, price, type, bkimage, image, reduced, category } =
+      const { title, des, price, type, bkimage, image, reduced, category,  } =
         this.localForm;
         console.log(price , reduced)
       if (
         !title ||
         !des ||
-        // !price ||
         !type ||
         !bkimage ||
         !image ||
@@ -703,7 +689,7 @@ export default {
           des: des || '',
           type: type || '',
           image:image || null,
-
+          
         }
         // console.log('valueE:', this.dataVideo);
         // console.log('valueE:', typeof(this.dataVideo.image));
@@ -728,9 +714,7 @@ export default {
       })
       if (type === 'error') {
         this.errorMessage()
-      } else {
-        this.dialog = true;
-      }
+      } 
     },
     errorMessage() {
       this.$Notice.error({

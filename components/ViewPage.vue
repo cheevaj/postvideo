@@ -1,154 +1,156 @@
 <template>
   <div class="custom-font">
     <v-card-text class="px-4" style="padding: 12px">
-      <v-row>
-        <v-col class="pa-0">
-          <v-card-text height="480" class="pa-0">
-            <video
-              :src="`https://apicenter.laotel.com:9443/tplussocial/VideoStreaming?v=${
-                form.video[0].thumbnail || ''
-              }`"
-              controls
-              style="width: 100%; height: 540px"
-            ></video>
-          </v-card-text>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="8" class="pl-0 pr-1">
-          <v-card-text class="px-0">
-            <v-card flat>
-              <v-card-title class="py-1 px-4">
-                <h3>{{ form.title }}</h3>
-              </v-card-title>
-            </v-card>
-          </v-card-text>
-          <v-card-text class="px-4 py-0">
-            <v-card-text class="custom-link pa-2">
-              {{ form.des }}
-            </v-card-text>
-          </v-card-text>
-          <v-card-text height="420" class="pa-4">
-            <v-img :src="form.bkimage" height="360" width="100%">
-              <v-card class="card-image">
-                <v-img
-                  :src="form.image"
-                  height="146"
-                  class="text-center"
-                  white="246"
-                  style="align-items: center; justify-content: center"
-                >
-                  <v-icon size="52" color="rgba(13, 13, 13, 0.8)"
-                    >mdi-play-circle</v-icon
-                  >
+      <div class="cover-photo">
+        <img
+          :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
+            form.bkimage ? form.bkimage
+              : ''
+          }`"
+          alt="Cover Photo"
+        />
+      </div>
+      <div class="profile-info">
+        <div class="avatar">
+          <img
+          :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
+            form.image ? form.image
+              : ''
+          }`"
+            alt="Avatar"
+          />
+        </div>
+        <div class="details">
+          <!-- <h1>{{ name }}</h1> -->
+          <h1>{{ form.title }}</h1>
+          <p
+            class="px-1"
+            style="font-size: 14px; color: #808080; font-weight: bold"
+          >
+            view
+            <span style="color: #4d4d4d; font-size: 14px; font-weight: bold"
+              >{{ form.views }}</span
+            >
+            <span style="color: #4d4d4d; font-size: 14px; font-weight: bold"
+              >( {{ form.categoryName }} )</span
+            >
+          </p>
+        </div>
+      </div>
+      <v-divider color="#e6e6e6" style="padding-top: 1px; margin-bottom: 4px" />
+      <v-card-text class="custom-link py-2 px-4 ma-4">
+        <div v-html="form.des"></div>
+        <!-- <div style="color: #737373">text test</div> -->
+      </v-card-text>
+      <div>
+        <v-card-actions class="pa-0">
+          <v-card-title
+            class="custom-font pr-1"
+            style="text-decoration: underline"
+          >
+            ຮູບລີວິວ
+          </v-card-title>
+          <v-divider
+            color="#e6e6e6"
+            class="mt-2"
+            style="padding-top: 1px; margin-bottom: 4px"
+        /></v-card-actions>
+        <v-card-text class="py-3 px-6">
+          <v-card
+            v-if="form.previewImg.length > 0"
+            flat
+            class="rounded-0"
+            style="
+              overflow-x: auto;
+              display: flex;
+              gap: 10px;
+              scrollbar-width: none;
+            "
+          >
+            <v-img
+              v-for="(item, index) in form.previewImg"
+              :key="index"
+              style="
+                border: 1px solid #a6a6a6;
+                height: 240px;
+                width: 220px;
+                flex: 0 0 auto;
+              "
+              :src="`https://apicenter.laotel.com:9443/tplussocial?img=${item}`"
+            />
+          </v-card>
+          <v-card
+            v-else
+            height="140"
+            outlined
+            class="d-flex justify-center align-center"
+          >
+            <h1 style="color: #666666; font-style: italic">
+              view images is Null
+            </h1>
+          </v-card>
+        </v-card-text>
+        <v-card-actions class="pa-0">
+          <v-card-title
+            class="custom-font pr-1"
+            style="text-decoration: underline"
+          >
+            ວີດີໂອ
+          </v-card-title>
+          <v-divider
+            color="#e6e6e6"
+            class="mt-2"
+            style="padding-top: 1px; margin-bottom: 4px"
+          />
+        </v-card-actions>
+        <v-card-text class="py-3 px-6">
+          <div v-if="form.video.length > 0">
+            <v-row>
+              <v-col
+                cols="4"
+                v-for="(itemVideo, index) in form.video"
+                :key="index"
+              >
+                <v-card flat class="custom-p px-2 py-1">
                   <span
-                    class="pr-2"
-                    style="
-                      position: absolute;
-                      right: 2px;
-                      bottom: 2px;
-                      color: #fff;
+                    v-if="
+                      itemVideo &&
+                      itemVideo.videoQualitydata &&
+                      itemVideo.videoQualitydata.quality
                     "
                   >
-                    {{ form.time }}
+                    {{ itemVideo.videoQualitydata.quality }}p
                   </span>
-                </v-img>
-              </v-card>
-            </v-img>
-          </v-card-text>
-        </v-col>
-        <v-col cols="4" class="pr-0 pl-1">
-          <v-card-text class="py-5">
-            <v-card-actions class="pa-0">
-              <v-spacer></v-spacer>
-              <v-card-actions class="custom-link px-2 py-1">
-                <v-icon>mdi-cash-100</v-icon>
-                <span>45.000Kip</span>
-              </v-card-actions>
-              <v-spacer></v-spacer>
-              <v-card-actions class="custom-link px-2 py-1">
-                <v-icon>mdi-thumb-up</v-icon>&nbsp;&nbsp;<span>4.5k</span>
-              </v-card-actions>
-              &nbsp;&nbsp;
-              <v-card-actions class="custom-link px-2 py-1">
-                <v-icon>mdi-cart</v-icon>&nbsp;&nbsp;<span>4.5k</span>
-              </v-card-actions>
-              <v-spacer></v-spacer>
-            </v-card-actions>
-          </v-card-text>
-          <v-card-title class="custom-font pa-1 color-text-load">
-            ວິດິໂອນີ້ຍົມຊື້
-          </v-card-title>
-          <v-card-text class="py-2 px-1">
-            <v-card flat width="100%" height="200">
-              <div v-for="(item_video, index) in video" :key="index">
-                <v-card-text
-                  class="pt-2 pb-2 pl-0 pr-3 hover-pointer"
-                  @click="
-                    handleMenuItemClick(
-                      false,
-                      item_video.id,
-                      item_video.title,
-                      item_video.image,
-                      item_video.des,
-                      item_video.price,
-                      item_video.type,
-                      item_video.bkimage,
-                      item_video.video,
-                      item_video.time
-                    )
+
+                  <v-divider color="#FFFF" />
+                </v-card>
+                <video
+                  :src="`https://apicenter.laotel.com:9443/tplussocial/VideoStreaming?v=${
+                    form.video.length > 0 ? itemVideo.filename || '' : ''
+                  }`"
+                  controls
+                  style="
+                    width: 100%;
+                    height: 240px;
+                    border: 1px solid #a6a6a6;
+                    background-color: #000;
                   "
-                >
-                  <v-row>
-                    <v-col cols="4">
-                      <v-card flat height="85">
-                        <v-img
-                          width="100%"
-                          height="100%"
-                          class="text-center"
-                          :src="item_video.image"
-                          style="
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                          "
-                        >
-                          <v-icon size="42" color="rgba(13, 13, 13, 0.8)"
-                            >mdi-play-circle</v-icon
-                          >
-                          <span
-                            class="pr-2"
-                            style="
-                              position: absolute;
-                              right: 2px;
-                              bottom: 2px;
-                              color: #fff;
-                            "
-                          >
-                            {{ item_video.time }}
-                          </span>
-                        </v-img>
-                      </v-card>
-                    </v-col>
-                    <v-col cols="8" class="px-1">
-                      <v-card flat height="85" class="rounded-0">
-                        <h3 class="py-1 px-0 custom-font">
-                          {{ item_video.title }}
-                        </h3>
-                        <v-card-text class="pa-0 custom-font">{{
-                          item_video.des
-                        }}</v-card-text>
-                      </v-card>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-                <v-divider></v-divider>
-              </div>
-            </v-card>
-          </v-card-text>
-        </v-col>
-      </v-row>
+                ></video>
+              </v-col>
+            </v-row>
+          </div>
+          <v-card
+            v-else
+            height="140"
+            outlined
+            class="d-flex justify-center align-center"
+          >
+            <h1 style="color: #666666; font-style: italic">Video is Null</h1>
+          </v-card>
+        </v-card-text>
+      </div>
     </v-card-text>
+    <br /><br /><br />
   </div>
 </template>
 
@@ -157,49 +159,7 @@ export default {
   name: 'ViewPage',
   data() {
     return {
-      video: [
-        {
-          id: '1234',
-          time: '2:34:06',
-          image: 'https://wallpaperaccess.com/full/1356284.jpg',
-          bkimage:
-            'http://blended-html.com/background-images/bi-background-black.png',
-          video:
-            'https://www.youtube.com/watch?v=MB3JQQy_QLM&list=RDMB3JQQy_QLM&start_radio=1',
-          title: 'ภาพเคลื่อนไหว - TAIY AKARD Feat. OLA Blackeyes 「Official MV',
-          des: 'ເພງ: #ພາບເຄື່ອນໄຫວ ສິລະປີນ: ຕ່າຍ ອາກາດ & ໂອລ້າ ແບຣັກອາຍເນື້ອຮ້ອງ ທຳນອງ: ຕ່າຍ ອາກາດ',
-          price: 34000,
-          type: 'ກະຕຸນ',
-        },
-        {
-          id: '3456',
-          time: '1:04:23',
-          image:
-            'https://samples-files.com/samples/Images/jpg/1920-1080-sample.jpg',
-          bkimage:
-            'http://blended-html.com/background-images/bi-background-black.png',
-          video:
-            'https://www.youtube.com/watch?v=MB3JQQy_QLM&list=RDMB3JQQy_QLM&start_radio=1',
-          title: 'ภาพเคลื่อนไหว - TAIY AKARD Feat. OLA Blackeyes 「Official MV',
-          price: 34000,
-          des: 'ເພງ: #ພາບເຄື່ອນໄຫວ ສິລະປີນ: ຕ່າຍ ອາກາດ & ໂອລ້າ ແບຣັກອາຍເນື້ອຮ້ອງ ທຳນອງ: ຕ່າຍ ອາກາດ',
-          type: 'ໜັງ',
-        },
-        {
-          id: '4567',
-          time: '2:04:23',
-          image:
-            'https://deep-image.ai/blog/content/images/size/w1600/2022/08/magic-g1db898374_1920.jpg',
-          bkimage:
-            'http://blended-html.com/background-images/bi-background-black.png',
-          video:
-            'https://www.youtube.com/watch?v=MB3JQQy_QLM&list=RDMB3JQQy_QLM&start_radio=1',
-          title: 'ภาพเคลื่อนไหว - TAIY AKARD Feat. OLA Blackeyes 「Official MV',
-          price: 34000,
-          des: 'ເພງ: #ພາບເຄື່ອນໄຫວ ສິລະປີນ: ຕ່າຍ ອາກາດ & ໂອລ້າ ແບຣັກອາຍເນື້ອຮ້ອງ ທຳນອງ: ຕ່າຍ ອາກາດ',
-          type: 'ໜັງບູ້',
-        },
-      ],
+      name: 'Breakpoints and media queries Customizing your theme.',
     }
   },
   computed: {
@@ -211,41 +171,8 @@ export default {
     this.getData()
   },
   methods: {
-    handleMenuItemClick(
-      active,
-      id,
-      title,
-      image,
-      des,
-      price,
-      type,
-      bkimage,
-      video,
-      time
-    ) {
-      const updatedForm = {
-        id,
-        title,
-        time,
-        image,
-        des,
-        price,
-        type,
-        bkimage,
-        video,
-      }
-      const updatedActive = active
-      this.$store.commit('SET_FORM', updatedForm)
-      this.$store.commit('SET_ACTIVE', updatedActive)
-      this.$store.commit('SET_ACTIVE_IMG', updatedActive)
-      this.$store.commit('SET_ACTIVE_BKIMG', updatedActive)
-      this.$store.commit('SET_ACTIVE_VIDEO', updatedActive)
-      this.$nextTick(() => {
-        console.log('form::', this.$store.state.form)
-      })
-    },
     getData() {
-      console.log(this.form)
+      console.log('Form::', this.form)
     },
   },
 }
@@ -265,6 +192,16 @@ export default {
 .custom-link {
   border-radius: 14px;
   background-color: rgb(242, 242, 242);
+}
+.custom-p {
+  width: 90px;
+  border-top-right-radius: 50%;
+  border-top-left-radius: 50%;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  background-color: #333333;
+  color: #ffff;
+  text-align: center;
 }
 .custom-font-global {
   font-family: 'Noto Sans Lao', sans-serif;
@@ -334,5 +271,64 @@ export default {
 }
 .color-grad-background {
   background-color: rgb(248, 248, 248);
+}
+.cover-photo img {
+  width: 100%;
+  height: auto;
+  height: 410px;
+  border-radius: 2px;
+}
+.profile-info {
+  display: flex;
+  align-items: center;
+  margin-top: -120px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+.avatar img {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  z-index: 20;
+  position: relative;
+  border: 4px solid #ffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.details {
+  padding: 15px;
+  padding-right: 85px;
+  padding-left: 110px;
+  margin-left: -100px;
+  margin-right: 50px;
+  position: relative;
+  z-index: 10;
+  background-color: #ffff;
+  clip-path: polygon(0 0, calc(100% - 80px) 0, 100% 80px, 100% 100%, 0 100%);
+}
+.details h1 {
+  font-size: 24px;
+  margin: 0;
+}
+.details p {
+  color: #777;
+  margin-top: 5px;
+}
+.actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+.actions button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.actions button:hover {
+  background-color: #0056b3;
 }
 </style>

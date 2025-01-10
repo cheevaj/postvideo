@@ -1,42 +1,45 @@
 <template>
-  <div style="background-color: rgb(239, 239, 239)">
-    <v-overlay :value="rightDrawer" />
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      right
-      fixed
-      width="650"
-      class="table-container-add scrollbar"
-      style="background-color: rgb(242, 242, 242)"
-      @click.stop
-    >
-      <v-card
-        outlined
-        class="py-0 px-3 rounded-0"
-        style="position: fixed; z-index: 100; width: 100%"
+  <div>
+    <div v-if="!select" style="background-color: rgb(239, 239, 239)">
+      <v-overlay :value="rightDrawer" style="z-index: 110" />
+      <v-navigation-drawer
+        v-model="rightDrawer"
+        right
+        fixed
+        width="650"
+        class="table-container-add scrollbar"
+        style="background-color: rgb(242, 242, 242); z-index: 110"
+        @click.stop
       >
-        <v-card-actions class="pa-0">
-          <v-icon class="color-hover" @click="closePost"> mdi-close </v-icon>
-          <v-card-title
-            v-if="SeriesMovie === 504405213"
-            class="custom-font py-1"
-            >ເພີ່ມຂໍ້ມູນຊີລີ່</v-card-title
-          >
-          <v-card-title v-else class="custom-font py-1">{{
-            active
-              ? 'ເພີ່ມຂໍ້ມູນວີດີໂອ'
-              : dialogPage === 0
-              ? 'ເພີ່ມວີດີໂອ'
-              : 'ເເກ້ໄຂຂໍ້ມູນ'
-          }}</v-card-title>
-        </v-card-actions>
-      </v-card>
-      <AddSeriesMovie v-if="dialogPage === 0 && SeriesMovie === 504405213" />
-      <DetailVideo v-else-if="dialogPage === 0 && !SeriesMovie !== 504405213" />
-      <UpdateVideo v-else-if="dialogPage === 1" />
-      <PostPage v-else />
-    </v-navigation-drawer>
-    <v-dialog
+        <v-card
+          outlined
+          class="py-0 px-3 rounded-0"
+          style="position: fixed; z-index: 100; width: 100%"
+        >
+          <v-card-actions class="pa-0">
+            <v-icon class="color-hover" @click="closePost"> mdi-close </v-icon>
+            <v-card-title
+              v-if="SeriesMovie === 504405213"
+              class="custom-font py-1"
+              >ເພີ່ມຂໍ້ມູນຊີລີ່</v-card-title
+            >
+            <v-card-title v-else class="custom-font py-1">{{
+              active
+                ? 'ເພີ່ມຂໍ້ມູນວີດີໂອ'
+                : dialogPage === 0
+                ? 'ເພີ່ມວີດີໂອ'
+                : 'ເເກ້ໄຂຂໍ້ມູນ'
+            }}</v-card-title>
+          </v-card-actions>
+        </v-card>
+        <AddSeriesMovie v-if="dialogPage === 0 && SeriesMovie === 504405213" />
+        <DetailVideo
+          v-else-if="dialogPage === 0 && !SeriesMovie !== 504405213"
+        />
+        <UpdateVideo v-else-if="dialogPage === 1" />
+        <PostPage v-else />
+      </v-navigation-drawer>
+      <!-- <v-dialog
       v-model="select"
       fullscreen
       hide-overlay
@@ -53,670 +56,814 @@
           >
         </v-card-actions>
         <v-card-text class="pa-0">
-          <!-- <DetailVideo v-if="dialogPage === 0" /> -->
           <ViewPage v-if="dialogPage === 9" />
         </v-card-text>
       </v-card>
-    </v-dialog>
-    <Modal
-      v-model="modal"
-      draggable
-      scrollable
-      :mask-closable="false"
-      width="340"
-      style="padding: 0px"
-    >
-      <template #header>
-        <v-card-actions
-          style="color: rgb(255, 215, 0); text-align: center; padding: 2px"
-        >
-          <v-spacer />
-          <h3 class="custom-font">
-            {{
-              modalactive
-                ? 'ທ່ານຕ້ອງການປິດຂາຍວີດີໂອນີ້ ຫຼື ບໍ?'
-                : 'ທ່ານຕ້ອງການລົບວີດີໂອນີ້ ຫຼື ບໍ?'
-            }}
-          </h3>
-          <v-spacer />
-        </v-card-actions>
-      </template>
-      <div>
-        <div style="text-align: center">
-          <v-card
-            flat
-            class="table-container-add scrollbar"
-            style="
-              height: 50px;
-              z-index: 100;
-              margin-top: 2px;
-              overflow-y: auto;
-            "
+    </v-dialog> -->
+      <Modal
+        v-model="modal"
+        draggable
+        scrollable
+        :mask-closable="false"
+        width="340"
+        style="padding: 0px"
+      >
+        <template #header>
+          <v-card-actions
+            style="color: rgb(255, 215, 0); text-align: center; padding: 2px"
           >
-            <p v-if="modalactive" class="custom-font">
-              ຖ້າທ່ານປິດວີດີໂອ, ຜູ້ໃຊ້ງານຄົນອື່ນໆຈະບໍ່ເຫັນ ເເລະ
-              ບໍ່ສາມາດຊື່ວີດີໂອນີ້ໄດ້. ທ່ານຕ້ອງການປິດຂາຍ ຫຼື ບໍ?
-            </p>
-            <p v-else class="custom-font">
-              ຖ້າທ່ານລົບວີດີໂອ,
-              ຂໍ້ມູນທັງໝົດຂອງວີດີໂອນີ້ຈະຖືກລົບອອກຈາກຖານຂໍ້ມູນ<span
-                style="color: #ff3300"
-                >!</span
-              >. ທ່ານຕ້ອງການລົບວີດີໂອນີ້ ຫຼື ບໍ?
-            </p>
-          </v-card>
+            <v-spacer />
+            <h3 class="custom-font">
+              {{
+                modalactive
+                  ? 'ທ່ານຕ້ອງການປິດຂາຍວີດີໂອນີ້ ຫຼື ບໍ?'
+                  : 'ທ່ານຕ້ອງການລົບວີດີໂອນີ້ ຫຼື ບໍ?'
+              }}
+            </h3>
+            <v-spacer />
+          </v-card-actions>
+        </template>
+        <div>
+          <div style="text-align: center">
+            <v-card
+              flat
+              class="table-container-add scrollbar"
+              style="
+                height: 50px;
+                z-index: 100;
+                margin-top: 2px;
+                overflow-y: auto;
+              "
+            >
+              <p v-if="modalactive" class="custom-font">
+                ຖ້າທ່ານປິດວີດີໂອ, ຜູ້ໃຊ້ງານຄົນອື່ນໆຈະບໍ່ເຫັນ ເເລະ
+                ບໍ່ສາມາດຊື່ວີດີໂອນີ້ໄດ້. ທ່ານຕ້ອງການປິດຂາຍ ຫຼື ບໍ?
+              </p>
+              <p v-else class="custom-font">
+                ຖ້າທ່ານລົບວີດີໂອ,
+                ຂໍ້ມູນທັງໝົດຂອງວີດີໂອນີ້ຈະຖືກລົບອອກຈາກຖານຂໍ້ມູນ<span
+                  style="color: #ff3300"
+                  >!</span
+                >. ທ່ານຕ້ອງການລົບວີດີໂອນີ້ ຫຼື ບໍ?
+              </p>
+            </v-card>
+          </div>
         </div>
-      </div>
-      <template #footer>
-        <Button
-          v-if="modalactive"
-          size="large"
-          long
-          style="background-color: #ff3300; color: #ffff"
-          @click="activeVideo(idVideo)"
-        >
-          <v-icon color="#ffff">{{ 'mdi-play-box-lock-outline' }}</v-icon
-          >&nbsp;
-          <span class="custom-font">{{ 'ປິດຂາຍວີດີໂອ' }}</span>
-        </Button>
-        <Button
-          v-else
-          size="large"
-          long
-          style="background-color: #ff3300; color: #ffff"
-          @click="deleteVideo(idVideo)"
-        >
-          <v-icon color="#ffff">mdi-delete-empty</v-icon>&nbsp;
-          <span class="custom-font">ລົບວີດີໂອ</span>
-        </Button>
-      </template>
-    </Modal>
-    <v-card-text class="ma-0 py-8 px-12">
-      <h1 class="custom-font my-4">ໂພດ</h1>
-      <v-row>
-        <v-col>
-          <v-card flat class="pa-4" style="border-radius: 15px">
-            <v-card-actions>
-              <div style="display: flex">
-                <form @submit.prevent="searchVideo">
-                  <Input
-                    class="custom-font"
-                    v-model="search"
-                    size="large"
-                    suffix="ios-search"
-                    placeholder="ກະລຸນາປ້ອມຊື່"
-                    style="width: 350px; height: 35px; margin-top: 1px"
-                    @keydown.enter="searchVideo"
-                  />
-                </form>
+        <template #footer>
+          <Button
+            v-if="modalactive"
+            size="large"
+            long
+            style="background-color: #ff3300; color: #ffff"
+            @click="activeVideo(idVideo)"
+          >
+            <v-icon color="#ffff">{{ 'mdi-play-box-lock-outline' }}</v-icon
+            >&nbsp;
+            <span class="custom-font">{{ 'ປິດຂາຍວີດີໂອ' }}</span>
+          </Button>
+          <Button
+            v-else
+            size="large"
+            long
+            style="background-color: #ff3300; color: #ffff"
+            @click="deleteVideo(idVideo)"
+          >
+            <v-icon color="#ffff">mdi-delete-empty</v-icon>&nbsp;
+            <span class="custom-font">ລົບວີດີໂອ</span>
+          </Button>
+        </template>
+      </Modal>
+      <v-card-text class="ma-0 py-8 px-12">
+        <h1 class="custom-font my-4">ໂພດ</h1>
+        <v-row>
+          <v-col>
+            <v-card flat class="pa-4" style="border-radius: 15px">
+              <v-card-actions>
+                <div style="display: flex">
+                  <form @submit.prevent="searchVideo">
+                    <Input
+                      class="custom-font"
+                      v-model="search"
+                      size="large"
+                      suffix="ios-search"
+                      placeholder="ກະລຸນາປ້ອມຊື່"
+                      style="width: 350px; height: 35px; margin-top: 1px"
+                      @keydown.enter="searchVideo"
+                    />
+                  </form>
+                  <v-btn
+                    :loading="loading"
+                    small
+                    text
+                    class="BK-color"
+                    style="
+                      height: 40px;
+                      color: #000;
+                      margin-top: 1px;
+                      margin-left: 1px;
+                      padding-left: 4px;
+                      padding-right: 4px;
+                    "
+                    @click="searchVideo"
+                  >
+                    <h3 class="custom-font color-text">{{ 'ຄົ້ນຫາ' }}</h3>
+                  </v-btn>
+                </div>
+                <v-spacer />
                 <v-btn
-                  :loading="loading"
-                  small
-                  text
-                  class="BK-color"
-                  style="
-                    height: 40px;
-                    color: #000;
-                    margin-top: 1px;
-                    margin-left: 1px;
-                    padding-left: 4px;
-                    padding-right: 4px;
-                  "
-                  @click="searchVideo"
+                  class="custom-font BK-color color-text"
+                  :outlined="!isHovered"
+                  style="background-color: rgb(255, 215, 0)"
+                  @mouseover="isHovered = true"
+                  @mouseleave="isHovered = false"
+                  @click.stop="addVideo"
                 >
-                  <h3 class="custom-font color-text">{{ 'ຄົ້ນຫາ' }}</h3>
+                  <v-icon>mdi-plus</v-icon>
+                  ເພີ່ມວີດີໂອ
                 </v-btn>
-              </div>
-              <v-spacer />
-              <v-btn
-                class="custom-font BK-color color-text"
-                :outlined="!isHovered"
-                style="background-color: rgb(255, 215, 0)"
-                @mouseover="isHovered = true"
-                @mouseleave="isHovered = false"
-                @click.stop="addVideo"
-              >
-                <v-icon>mdi-plus</v-icon>
-                ເພີ່ມວີດີໂອ
-              </v-btn>
-            </v-card-actions>
-            <div style="margin: 8px; height: 620px">
-              <Tabs type="card" v-model="tabItem" class="custom-font">
-                <TabPane
-                  v-for="(itemType, id) in filteredType"
-                  :key="id"
-                  :label="itemType.name"
-                  class="custom-font"
-                >
-                  <div class="pt-2">
-                    <div
-                      v-for="(item_video, index) in paginatedVideos"
-                      :key="index"
-                    >
-                      <div v-if="tabItem === id">
-                        <v-card-text class="pt-2 pb-2 pl-0 pr-3">
-                          <v-row>
-                            <v-col cols="2">
-                              <v-card
-                                flat
-                                height="85"
-                                class="hover-pointer"
-                                @click="
-                                  selectMenu(false, 9, {
-                                    id: item_video.videoId,
-                                    title: item_video.name,
-                                    image: item_video.img,
-                                    des: item_video.description,
-                                    price: item_video.price,
-                                    type: item_video.typeId,
-                                    bkimage: item_video.bgImg,
-                                    video:
-                                      item_video.videoQualityinfodata ||
-                                      item_video.videoSeriesData,
-                                    time: item_video.time,
-                                    resolution: item_video.videoQualityinfodata
-                                      ? item_video.videoQualityinfodata.map(
-                                          (q) => q.videoQualitydata.quality
-                                        )
-                                      : [],
-                                  })
-                                "
-                              >
-                                <v-img
-                                  width="100%"
-                                  height="100%"
-                                  :gradient="
-                                    item_video.videoQualityinfodata?.length >
-                                      0 ||
-                                    item_video.videoSeriesData?.length > 0
-                                      ? null
-                                      : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'
-                                  "
-                                  class="text-center"
-                                  :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
-                                    item_video.videoQualityinfodata?.length > 0
-                                      ? item_video.videoQualityinfodata[0]
-                                          ?.thumbnail
-                                      : item_video.img
-                                  }`"
-                                  style="
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
+              </v-card-actions>
+              <div style="margin: 8px; height: 620px">
+                <Tabs type="card" v-model="tabItem" class="custom-font">
+                  <TabPane
+                    v-for="(itemType, id) in filteredType"
+                    :key="id"
+                    :label="itemType.name"
+                    class="custom-font"
+                  >
+                    <div class="pt-2">
+                      <div
+                        v-for="(item_video, index) in paginatedVideos"
+                        :key="index"
+                      >
+                        <div v-if="tabItem === id">
+                          <v-card-text class="pt-2 pb-2 pl-0 pr-3">
+                            <v-row>
+                              <v-col cols="2">
+                                <v-card
+                                  flat
+                                  height="85"
+                                  class="hover-pointer"
+                                  @click="
+                                    selectMenu(false, 9, {
+                                      id: item_video.videoId,
+                                      title: item_video.name,
+                                      image: item_video.img,
+                                      des: item_video.description,
+                                      price: item_video.price,
+                                      type: item_video.typeId,
+                                      bkimage: item_video.bgImg,
+                                      video:
+                                        item_video.videoQualityinfodata ||
+                                        item_video.videoSeriesData,
+                                      time: item_video.time,
+                                      resolution:
+                                        item_video.videoQualityinfodata
+                                          ? item_video.videoQualityinfodata.map(
+                                              (q) => q.videoQualitydata.quality
+                                            )
+                                          : [],
+                                      previewImg: item_video.videoDetailData
+                                        ? item_video.videoDetailData.map(
+                                            (q) => q.previewImg
+                                          )
+                                        : [],
+                                      category: item_video.videoCategoryData
+                                        ? item_video.videoCategoryData.map(
+                                            (q) => Number(q.cateId) || null
+                                          )
+                                        : [],
+                                      categoryName: item_video.videoCategoryData
+                                        ? item_video.videoCategoryData
+                                            .map(
+                                              (q) =>
+                                                q.videoCategoryDetailData[1]
+                                                  ?.name || ''
+                                            )
+                                            .filter((name) => name)
+                                            .join(', ')
+                                        : '',
+                                      views: item_video.views,
+                                    })
                                   "
                                 >
-                                  <v-icon
-                                    size="32"
-                                    color="#ffcc00"
-                                    style="
-                                      background-color: rgba(13, 13, 13, 0.8);
-                                      border-radius: 50%;
-                                      padding: 0px;
-                                    "
-                                  >
-                                    {{
+                                  <v-img
+                                    width="100%"
+                                    height="100%"
+                                    :gradient="
                                       item_video.videoQualityinfodata?.length >
                                         0 ||
                                       item_video.videoSeriesData?.length > 0
-                                        ? 'mdi-play'
-                                        : 'mdi-download'
-                                    }}
-                                  </v-icon>
-                                  <span
-                                    class="pr-2"
+                                        ? null
+                                        : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'
+                                    "
+                                    class="text-center"
+                                    :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
+                                      item_video.videoQualityinfodata?.length >
+                                      0
+                                        ? item_video.videoQualityinfodata[0]
+                                            ?.thumbnail
+                                        : item_video.img
+                                    }`"
                                     style="
-                                      position: absolute;
-                                      right: 2px;
-                                      bottom: 2px;
-                                      color: #fff;
+                                      display: flex;
+                                      align-items: center;
+                                      justify-content: center;
                                     "
                                   >
-                                    {{ item_video.time }}
-                                  </span>
-                                </v-img>
-                              </v-card>
-                            </v-col>
-                            <v-col cols="8" class="px-1">
-                              <v-card flat height="85" class="rounded-0">
-                                <h3 class="py-1 px-0">
-                                  <span
-                                    class="custom-font hover-pointer"
-                                    @click="
-                                      selectMenu(false, 9, {
-                                        id: item_video.videoId,
-                                        title: item_video.name,
-                                        image: item_video.img,
-                                        des: item_video.description,
-                                        price: item_video.price,
-                                        type: item_video.typeId,
-                                        bkimage: item_video.bgImg,
-                                        video:
-                                          item_video.videoQualityinfodata ||
-                                          item_video.videoSeriesData,
-                                        time: item_video.time,
-                                        resolution:
-                                          item_video.videoQualityinfodata
-                                            ? item_video.videoQualityinfodata.map(
-                                                (q) =>
-                                                  q.videoQualitydata.quality
-                                              )
-                                            : [],
-                                      })
-                                    "
-                                  >
-                                    {{ item_video.name }}
-                                  </span>
-                                </h3>
-                                <v-card-text class="pa-0 custom-font">
-                                  <span
-                                    class="custom-font hover-pointer"
-                                    @click="
-                                      selectMenu(false, 9, {
-                                        id: item_video.videoId,
-                                        title: item_video.name,
-                                        image: item_video.img,
-                                        des: item_video.description,
-                                        price: item_video.price,
-                                        type: item_video.typeId,
-                                        bkimage: item_video.bgImg,
-                                        video:
-                                          item_video.videoQualityinfodata ||
-                                          item_video.videoSeriesData,
-                                        time: item_video.time,
-                                        resolution:
-                                          item_video.videoQualityinfodata
-                                            ? item_video.videoQualityinfodata.map(
-                                                (q) =>
-                                                  q.videoQualitydata.quality
-                                              )
-                                            : [],
-                                      })
-                                    "
-                                  >
-                                    <div
-                                      v-html="
-                                        truncatedDescription(
-                                          item_video.description
-                                        )
+                                    <v-icon
+                                      size="32"
+                                      color="#ffcc00"
+                                      style="
+                                        background-color: rgba(13, 13, 13, 0.8);
+                                        border-radius: 50%;
+                                        padding: 0px;
                                       "
-                                    ></div>
-                                  </span>
-                                </v-card-text>
-                              </v-card>
-                            </v-col>
-                            <!-- <v-col cols="1"   class="pl-0">
+                                    >
+                                      {{
+                                        item_video.videoQualityinfodata
+                                          ?.length > 0 ||
+                                        item_video.videoSeriesData?.length > 0
+                                          ? 'mdi-play'
+                                          : 'mdi-download'
+                                      }}
+                                    </v-icon>
+                                    <span
+                                      class="pr-2"
+                                      style="
+                                        position: absolute;
+                                        right: 2px;
+                                        bottom: 2px;
+                                        color: #fff;
+                                      "
+                                    >
+                                      {{ item_video.time }}
+                                    </span>
+                                  </v-img>
+                                </v-card>
+                              </v-col>
+                              <v-col cols="8" class="px-1">
+                                <v-card flat height="85" class="rounded-0">
+                                  <h3 class="py-1 px-0">
+                                    <span
+                                      class="custom-font hover-pointer"
+                                      @click="
+                                        selectMenu(false, 9, {
+                                          id: item_video.videoId,
+                                          title: item_video.name,
+                                          image: item_video.img,
+                                          des: item_video.description,
+                                          price: item_video.price,
+                                          type: item_video.typeId,
+                                          bkimage: item_video.bgImg,
+                                          video:
+                                            item_video.videoQualityinfodata ||
+                                            item_video.videoSeriesData,
+                                          time: item_video.time,
+                                          resolution:
+                                            item_video.videoQualityinfodata
+                                              ? item_video.videoQualityinfodata.map(
+                                                  (q) =>
+                                                    q.videoQualitydata.quality
+                                                )
+                                              : [],
+                                          previewImg: item_video.videoDetailData
+                                            ? item_video.videoDetailData.map(
+                                                (q) => q.previewImg
+                                              )
+                                            : [],
+                                          category: item_video.videoCategoryData
+                                            ? item_video.videoCategoryData.map(
+                                                (q) => Number(q.cateId) || null
+                                              )
+                                            : [],
+                                          categoryName:
+                                            item_video.videoCategoryData
+                                              ? item_video.videoCategoryData
+                                                  .map(
+                                                    (q) =>
+                                                      q
+                                                        .videoCategoryDetailData[1]
+                                                        ?.name || ''
+                                                  )
+                                                  .filter((name) => name)
+                                                  .join(', ')
+                                              : '',
+                                          views: item_video.views,
+                                        })
+                                      "
+                                    >
+                                      {{ item_video.name }}
+                                    </span>
+                                  </h3>
+                                  <v-card-text class="pa-0 custom-font">
+                                    <span
+                                      class="custom-font hover-pointer"
+                                      @click="
+                                        selectMenu(false, 9, {
+                                          id: item_video.videoId,
+                                          title: item_video.name,
+                                          image: item_video.img,
+                                          des: item_video.description,
+                                          price: item_video.price,
+                                          type: item_video.typeId,
+                                          bkimage: item_video.bgImg,
+                                          video:
+                                            item_video.videoQualityinfodata ||
+                                            item_video.videoSeriesData,
+                                          time: item_video.time,
+                                          resolution:
+                                            item_video.videoQualityinfodata
+                                              ? item_video.videoQualityinfodata.map(
+                                                  (q) =>
+                                                    q.videoQualitydata.quality
+                                                )
+                                              : [],
+                                          previewImg: item_video.videoDetailData
+                                            ? item_video.videoDetailData.map(
+                                                (q) => q.previewImg
+                                              )
+                                            : [],
+                                          category: item_video.videoCategoryData
+                                            ? item_video.videoCategoryData.map(
+                                                (q) => Number(q.cateId) || null
+                                              )
+                                            : [],
+                                          categoryName:
+                                            item_video.videoCategoryData
+                                              ? item_video.videoCategoryData
+                                                  .map(
+                                                    (q) =>
+                                                      q
+                                                        .videoCategoryDetailData[1]
+                                                        ?.name || ''
+                                                  )
+                                                  .filter((name) => name)
+                                                  .join(', ')
+                                              : '',
+                                          views: item_video.views,
+                                        })
+                                      "
+                                    >
+                                      <div
+                                        v-html="
+                                          truncatedDescription(
+                                            item_video.description
+                                          )
+                                        "
+                                      ></div>
+                                    </span>
+                                  </v-card-text>
+                                </v-card>
+                              </v-col>
+                              <!-- <v-col cols="1"   class="pl-0">
                               <v-card flat height="85" style="align-items: center; justify-content: center; padding-top: 25px;">
                                 <v-btn text style="background-color: rgb(51, 204, 51); color: #ffff; border-radius: 10px;">Active</v-btn>
                               </v-card>
                             </v-col> -->
-                            <v-col cols="2" class="py-0 pr-0">
-                              <v-card
-                                flat
-                                height="85"
-                                class="text-right mt-2 p"
-                              >
-                                <v-menu
-                                  v-model="menu[index]"
-                                  :close-on-content-click="false"
-                                  offset-y
-                                  nudge-right="45"
-                                  @click:outside="menu[index] = false"
+                              <v-col cols="2" class="py-0 pr-0">
+                                <v-card
+                                  flat
+                                  height="85"
+                                  class="text-right mt-2 p"
                                 >
-                                  <template v-slot:activator="{ on, attrs }">
-                                    <v-btn
-                                      fab
-                                      small
-                                      text
-                                      class="pa-0"
-                                      v-bind="attrs"
-                                      v-on="on"
-                                    >
-                                      <v-icon>mdi-dots-vertical</v-icon>
-                                    </v-btn>
-                                  </template>
-                                  <v-card
-                                    width="150"
-                                    class="outlined-border color-grad-background"
+                                  <v-menu
+                                    v-model="menu[index]"
+                                    :close-on-content-click="false"
+                                    offset-y
+                                    nudge-right="45"
+                                    @click:outside="menu[index] = false"
                                   >
-                                    <h4
-                                      class="custom-font text-left pa-2 color-grad-background"
-                                    >
-                                      ຈັດການ
-                                    </h4>
-                                    <v-list
-                                      class="pa-0 text-center"
-                                      style="border-radius: 8px"
-                                    >
-                                      <v-list-item
-                                        v-for="(
-                                          item_menu, item_index
-                                        ) in itemsMenu"
-                                        :key="item_index"
-                                        @click="
-                                          selectMenu(false, item_index, {
-                                            id: item_video.videoId,
-                                            title: item_video.name,
-                                            image: item_video.img,
-                                            des: item_video.description,
-                                            price: item_video.price,
-                                            type: item_video.typeId,
-                                            bkimage: item_video.bgImg,
-                                            video:
-                                              item_video.videoQualityinfodata ||
-                                              item_video.videoSeriesData,
-                                            time: item_video.time,
-                                            resolution:
-                                              item_video.videoQualityinfodata
-                                                ? item_video.videoQualityinfodata.map(
-                                                    (q) =>
-                                                      q.videoQualitydata.quality
-                                                  )
-                                                : [],
-                                            previewImg:
-                                              item_video.videoDetailData
-                                                ? item_video.videoDetailData.map(
-                                                    (q) => q.previewImg
-                                                  )
-                                                : [],
-                                            category:
-                                              item_video.videoCategoryData
-                                                ? item_video.videoCategoryData.map(
-                                                    (q) =>
-                                                      Number(q.cateId) || null
-                                                  )
-                                                : [],
-                                          })
-                                          menu[index] = false
-                                        "
-                                        class="custom-font mouse-hover-menu"
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <v-btn
+                                        fab
+                                        small
+                                        text
+                                        class="pa-0"
+                                        v-bind="attrs"
+                                        v-on="on"
                                       >
-                                        <v-list-item-content>
-                                          <v-card-actions class="pa-0">
-                                            <v-icon>{{ item_menu.icon }}</v-icon
-                                            >&nbsp;&nbsp;{{ item_menu.title }}
-                                          </v-card-actions>
-                                        </v-list-item-content>
-                                      </v-list-item>
-                                    </v-list>
-                                  </v-card>
-                                </v-menu>
-                              </v-card>
-                            </v-col>
-                          </v-row>
-                        </v-card-text>
-                        <v-divider></v-divider>
+                                        <v-icon>mdi-dots-vertical</v-icon>
+                                      </v-btn>
+                                    </template>
+                                    <v-card
+                                      width="150"
+                                      class="outlined-border color-grad-background"
+                                    >
+                                      <h4
+                                        class="custom-font text-left pa-2 color-grad-background"
+                                      >
+                                        ຈັດການ
+                                      </h4>
+                                      <v-list
+                                        class="pa-0 text-center"
+                                        style="border-radius: 8px"
+                                      >
+                                        <v-list-item
+                                          v-for="(
+                                            item_menu, item_index
+                                          ) in itemsMenu"
+                                          :key="item_index"
+                                          @click="
+                                            selectMenu(false, item_index, {
+                                              id: item_video.videoId,
+                                              title: item_video.name,
+                                              image: item_video.img,
+                                              des: item_video.description,
+                                              price: item_video.price,
+                                              type: item_video.typeId,
+                                              bkimage: item_video.bgImg,
+                                              video:
+                                                item_video.videoQualityinfodata ||
+                                                item_video.videoSeriesData,
+                                              time: item_video.time,
+                                              resolution:
+                                                item_video.videoQualityinfodata
+                                                  ? item_video.videoQualityinfodata.map(
+                                                      (q) =>
+                                                        q.videoQualitydata
+                                                          .quality
+                                                    )
+                                                  : [],
+                                              previewImg:
+                                                item_video.videoDetailData
+                                                  ? item_video.videoDetailData.map(
+                                                      (q) => q.previewImg
+                                                    )
+                                                  : [],
+                                              category:
+                                                item_video.videoCategoryData
+                                                  ? item_video.videoCategoryData.map(
+                                                      (q) =>
+                                                        Number(q.cateId) || null
+                                                    )
+                                                  : [],
+                                              views: item_video.views,
+                                            })
+                                            menu[index] = false
+                                          "
+                                          class="custom-font mouse-hover-menu"
+                                        >
+                                          <v-list-item-content>
+                                            <v-card-actions class="pa-0">
+                                              <v-icon>{{
+                                                item_menu.icon
+                                              }}</v-icon
+                                              >&nbsp;&nbsp;{{ item_menu.title }}
+                                            </v-card-actions>
+                                          </v-list-item-content>
+                                        </v-list-item>
+                                      </v-list>
+                                    </v-card>
+                                  </v-menu>
+                                </v-card>
+                              </v-col>
+                            </v-row>
+                          </v-card-text>
+                          <v-divider></v-divider>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </TabPane>
-                <TabPane v-if="searchvideo" label="ຄົ້ນຫາ" class="custom-font">
-                  <div
-                    v-if="tabItem === 3"
-                    class="py-2 table-container-post scrollbar"
-                    style="height: 580px; overflow-y: auto"
+                  </TabPane>
+                  <TabPane
+                    v-if="searchvideo"
+                    label="ຄົ້ນຫາ"
+                    class="custom-font"
                   >
-                    <v-card-text
-                      v-if="videosearch.length <= 0"
-                      width="100%"
-                      height="120px mt-12"
-                      class="text-center"
-                      ><h3 class="custom-font">
-                        ບໍ່ພົບວີດີໂອທີ່ຄົນຫາ
-                      </h3></v-card-text
+                    <div
+                      v-if="tabItem === 3"
+                      class="py-2 table-container-post scrollbar"
+                      style="height: 580px; overflow-y: auto"
                     >
-                    <div v-for="(item, index) in videosearch" :key="index">
-                      <div v-if="tabItem === filteredType.length">
-                        <v-card-text class="pt-2 pb-2 pl-0 pr-3">
-                          <v-row>
-                            <v-col cols="2">
-                              <v-card
-                                flat
-                                height="85"
-                                class="hover-pointer"
-                                @click="
-                                  selectMenu(false, 9, {
-                                    id: item.videoId,
-                                    title: item.name,
-                                    image: item.img,
-                                    des: item.description,
-                                    price: item.price,
-                                    type: item.typeId,
-                                    bkimage: item.bgImg,
-                                    video:
-                                      item.videoQualityinfodata ||
-                                      item.videoSeriesData,
-                                    time: item.time,
-                                    resolution: item.resolution,
-                                  })
-                                "
-                              >
-                                <v-img
-                                  width="100%"
-                                  height="100%"
-                                  :gradient="
-                                    item.videoQualityinfodata?.length > 0 ||
-                                    item.videoSeriesData?.length > 0
-                                      ? null
-                                      : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'
-                                  "
-                                  class="text-center"
-                                  :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
-                                    item.videoQualityinfodata?.length > 0
-                                      ? item.videoQualityinfodata[0]?.thumbnail
-                                      : item.img
-                                  }`"
-                                  style="
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
+                      <v-card-text
+                        v-if="videosearch.length <= 0"
+                        width="100%"
+                        height="120px mt-12"
+                        class="text-center"
+                        ><h3 class="custom-font">
+                          ບໍ່ພົບວີດີໂອທີ່ຄົນຫາ
+                        </h3></v-card-text
+                      >
+                      <div v-for="(item, index) in videosearch" :key="index">
+                        <div v-if="tabItem === filteredType.length">
+                          <v-card-text class="pt-2 pb-2 pl-0 pr-3">
+                            <v-row>
+                              <v-col cols="2">
+                                <v-card
+                                  flat
+                                  height="85"
+                                  class="hover-pointer"
+                                  @click="
+                                    selectMenu(false, 9, {
+                                      id: item.videoId,
+                                      title: item.name,
+                                      image: item.img,
+                                      des: item.description,
+                                      price: item.price,
+                                      type: item.typeId,
+                                      bkimage: item.bgImg,
+                                      video:
+                                        item.videoQualityinfodata ||
+                                        item.videoSeriesData,
+                                      time: item.time,
+                                      resolution: item.resolution,
+                                      categoryName: item_video.videoCategoryData
+                                        ? item.videoCategoryData
+                                            .map(
+                                              (q) =>
+                                                q.videoCategoryDetailData[1]
+                                                  ?.name || ''
+                                            )
+                                            .filter((name) => name)
+                                            .join(', ')
+                                        : '',
+                                      views: item.views,
+                                    })
                                   "
                                 >
-                                  <v-icon
-                                    size="32"
-                                    color="#ffcc00"
-                                    style="
-                                      background-color: rgba(13, 13, 13, 0.8);
-                                      border-radius: 50%;
-                                      padding: 0px;
-                                    "
-                                  >
-                                    {{
+                                  <v-img
+                                    width="100%"
+                                    height="100%"
+                                    :gradient="
                                       item.videoQualityinfodata?.length > 0 ||
                                       item.videoSeriesData?.length > 0
-                                        ? 'mdi-play'
-                                        : 'mdi-download'
-                                    }}
-                                  </v-icon>
-                                  <span
-                                    class="pr-2"
+                                        ? null
+                                        : 'to top right, rgba(225,225,225,0.7), rgba(225,225,225,0.7)'
+                                    "
+                                    class="text-center"
+                                    :src="`https://apicenter.laotel.com:9443/tplussocial?img=${
+                                      item.videoQualityinfodata?.length > 0
+                                        ? item.videoQualityinfodata[0]
+                                            ?.thumbnail
+                                        : item.img
+                                    }`"
                                     style="
-                                      position: absolute;
-                                      right: 2px;
-                                      bottom: 2px;
-                                      color: #fff;
+                                      display: flex;
+                                      align-items: center;
+                                      justify-content: center;
                                     "
                                   >
-                                    {{ item.time }}
-                                  </span>
-                                  <v-card
-                                    flat
-                                    class="filtered-name-card-triangle"
-                                  >
-                                    <span class="triangle-text">
-                                      {{ getFilteredName(item.typeId) }}
-                                    </span>
-                                  </v-card>
-                                </v-img>
-                              </v-card>
-                            </v-col>
-                            <v-col cols="8" class="px-1">
-                              <v-card flat height="85" class="rounded-0">
-                                <h3 class="py-1 px-0">
-                                  <span
-                                    class="custom-font hover-pointer"
-                                    @click="
-                                      selectMenu(false, 9, {
-                                        id: item.videoId,
-                                        title: item.name,
-                                        image: item.img,
-                                        des: item.description,
-                                        price: item.price,
-                                        type: item.typeId,
-                                        bkimage: item.bgImg,
-                                        video:
-                                          item.videoQualityinfodata ||
-                                          item.videoSeriesData,
-                                        time: item.time,
-                                        resolution: item.resolution,
-                                      })
-                                    "
-                                  >
-                                    {{ item.name }}
-                                  </span>
-                                </h3>
-                                <v-card-text class="pa-0 custom-font">
-                                  <span
-                                    class="custom-font hover-pointer"
-                                    @click="
-                                      selectMenu(false, 9, {
-                                        id: item.videoId,
-                                        title: item.name,
-                                        image: item.img,
-                                        des: item.description,
-                                        price: item.price,
-                                        type: item.typeId,
-                                        bkimage: item.bgImg,
-                                        video:
-                                          item.videoQualityinfodata ||
-                                          item.videoSeriesData,
-                                        time: item.time,
-                                        resolution: item.resolution,
-                                      })
-                                    "
-                                  >
-                                    <div
-                                      v-html="
-                                        truncatedDescription(item.description)
+                                    <v-icon
+                                      size="32"
+                                      color="#ffcc00"
+                                      style="
+                                        background-color: rgba(13, 13, 13, 0.8);
+                                        border-radius: 50%;
+                                        padding: 0px;
                                       "
-                                    ></div>
-                                  </span>
-                                </v-card-text>
-                              </v-card>
-                            </v-col>
-                            <!-- <v-col cols="1"   class="pl-0">
+                                    >
+                                      {{
+                                        item.videoQualityinfodata?.length > 0 ||
+                                        item.videoSeriesData?.length > 0
+                                          ? 'mdi-play'
+                                          : 'mdi-download'
+                                      }}
+                                    </v-icon>
+                                    <span
+                                      class="pr-2"
+                                      style="
+                                        position: absolute;
+                                        right: 2px;
+                                        bottom: 2px;
+                                        color: #fff;
+                                      "
+                                    >
+                                      {{ item.time }}
+                                    </span>
+                                    <v-card
+                                      flat
+                                      class="filtered-name-card-triangle"
+                                    >
+                                      <span class="triangle-text">
+                                        {{ getFilteredName(item.typeId) }}
+                                      </span>
+                                    </v-card>
+                                  </v-img>
+                                </v-card>
+                              </v-col>
+                              <v-col cols="8" class="px-1">
+                                <v-card flat height="85" class="rounded-0">
+                                  <h3 class="py-1 px-0">
+                                    <span
+                                      class="custom-font hover-pointer"
+                                      @click="
+                                        selectMenu(false, 9, {
+                                          id: item.videoId,
+                                          title: item.name,
+                                          image: item.img,
+                                          des: item.description,
+                                          price: item.price,
+                                          type: item.typeId,
+                                          bkimage: item.bgImg,
+                                          video:
+                                            item.videoQualityinfodata ||
+                                            item.videoSeriesData,
+                                          time: item.time,
+                                          resolution: item.resolution,
+                                          categoryName:
+                                            item_video.videoCategoryData
+                                              ? item.videoCategoryData
+                                                  .map(
+                                                    (q) =>
+                                                      q
+                                                        .videoCategoryDetailData[1]
+                                                        ?.name || ''
+                                                  )
+                                                  .filter((name) => name)
+                                                  .join(', ')
+                                              : '',
+                                          views: item.views,
+                                        })
+                                      "
+                                    >
+                                      {{ item.name }}
+                                    </span>
+                                  </h3>
+                                  <v-card-text class="pa-0 custom-font">
+                                    <span
+                                      class="custom-font hover-pointer"
+                                      @click="
+                                        selectMenu(false, 9, {
+                                          id: item.videoId,
+                                          title: item.name,
+                                          image: item.img,
+                                          des: item.description,
+                                          price: item.price,
+                                          type: item.typeId,
+                                          bkimage: item.bgImg,
+                                          video:
+                                            item.videoQualityinfodata ||
+                                            item.videoSeriesData,
+                                          time: item.time,
+                                          resolution: item.resolution,
+                                          categoryName:
+                                            item_video.videoCategoryData
+                                              ? item.videoCategoryData
+                                                  .map(
+                                                    (q) =>
+                                                      q
+                                                        .videoCategoryDetailData[1]
+                                                        ?.name || ''
+                                                  )
+                                                  .filter((name) => name)
+                                                  .join(', ')
+                                              : '',
+                                          views: item.views,
+                                        })
+                                      "
+                                    >
+                                      <div
+                                        v-html="
+                                          truncatedDescription(item.description)
+                                        "
+                                      ></div>
+                                    </span>
+                                  </v-card-text>
+                                </v-card>
+                              </v-col>
+                              <!-- <v-col cols="1"   class="pl-0">
                               <v-card flat height="85" style="align-items: center; justify-content: center; padding-top: 25px;">
                                 <v-btn text style="background-color: rgb(51, 204, 51); color: #ffff; border-radius: 10px;">Active</v-btn>
                               </v-card>
                             </v-col> -->
-                            <v-col cols="2" class="py-0 pr-0">
-                              <v-card
-                                flat
-                                height="85"
-                                class="text-right mt-2 p"
-                              >
-                                <v-menu
-                                  v-model="menu[index]"
-                                  :close-on-content-click="false"
-                                  offset-y
-                                  nudge-right="45"
-                                  @click:outside="menu[index] = false"
+                              <v-col cols="2" class="py-0 pr-0">
+                                <v-card
+                                  flat
+                                  height="85"
+                                  class="text-right mt-2 p"
                                 >
-                                  <template v-slot:activator="{ on, attrs }">
-                                    <v-btn
-                                      fab
-                                      small
-                                      text
-                                      class="pa-0"
-                                      v-bind="attrs"
-                                      v-on="on"
-                                    >
-                                      <v-icon>mdi-dots-vertical</v-icon>
-                                    </v-btn>
-                                  </template>
-                                  <v-card
-                                    width="150"
-                                    class="outlined-border color-grad-background"
+                                  <v-menu
+                                    v-model="menu[index]"
+                                    :close-on-content-click="false"
+                                    offset-y
+                                    nudge-right="45"
+                                    @click:outside="menu[index] = false"
                                   >
-                                    <h4
-                                      class="custom-font text-left pa-2 color-grad-background"
-                                    >
-                                      ຈັດການ
-                                    </h4>
-                                    <v-list
-                                      class="pa-0 text-center"
-                                      style="border-radius: 8px"
-                                    >
-                                      <v-list-item
-                                        v-for="(
-                                          item_menu, item_index
-                                        ) in itemsMenu"
-                                        :key="item_index"
-                                        @click="
-                                          selectMenu(false, item_index, {
-                                            id: item.videoId,
-                                            title: item.name,
-                                            image: item.img,
-                                            des: item.description,
-                                            price: item.price,
-                                            type: item.typeId,
-                                            bkimage: item.bgImg,
-                                            video:
-                                              item.videoQualityinfodata ||
-                                              item.videoSeriesData,
-                                            time: item.time,
-                                            resolution: item.resolution,
-                                          })
-                                          menu[index] = false
-                                        "
-                                        class="custom-font mouse-hover-menu"
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <v-btn
+                                        fab
+                                        small
+                                        text
+                                        class="pa-0"
+                                        v-bind="attrs"
+                                        v-on="on"
                                       >
-                                        <v-list-item-content>
-                                          <v-card-actions class="pa-0">
-                                            <v-icon>{{ item_menu.icon }}</v-icon
-                                            >&nbsp;&nbsp;{{ item_menu.title }}
-                                          </v-card-actions>
-                                        </v-list-item-content>
-                                      </v-list-item>
-                                    </v-list>
-                                  </v-card>
-                                </v-menu>
-                              </v-card>
-                            </v-col>
-                          </v-row>
-                        </v-card-text>
-                        <v-divider></v-divider>
+                                        <v-icon>mdi-dots-vertical</v-icon>
+                                      </v-btn>
+                                    </template>
+                                    <v-card
+                                      width="150"
+                                      class="outlined-border color-grad-background"
+                                    >
+                                      <h4
+                                        class="custom-font text-left pa-2 color-grad-background"
+                                      >
+                                        ຈັດການ
+                                      </h4>
+                                      <v-list
+                                        class="pa-0 text-center"
+                                        style="border-radius: 8px"
+                                      >
+                                        <v-list-item
+                                          v-for="(
+                                            item_menu, item_index
+                                          ) in itemsMenu"
+                                          :key="item_index"
+                                          @click="
+                                            selectMenu(false, item_index, {
+                                              id: item.videoId,
+                                              title: item.name,
+                                              image: item.img,
+                                              des: item.description,
+                                              price: item.price,
+                                              type: item.typeId,
+                                              bkimage: item.bgImg,
+                                              video:
+                                                item.videoQualityinfodata ||
+                                                item.videoSeriesData,
+                                              time: item.time,
+                                              resolution: item.resolution,
+                                              views: item.views,
+                                            })
+                                            menu[index] = false
+                                          "
+                                          class="custom-font mouse-hover-menu"
+                                        >
+                                          <v-list-item-content>
+                                            <v-card-actions class="pa-0">
+                                              <v-icon>{{
+                                                item_menu.icon
+                                              }}</v-icon
+                                              >&nbsp;&nbsp;{{ item_menu.title }}
+                                            </v-card-actions>
+                                          </v-list-item-content>
+                                        </v-list-item>
+                                      </v-list>
+                                    </v-card>
+                                  </v-menu>
+                                </v-card>
+                              </v-col>
+                            </v-row>
+                          </v-card-text>
+                          <v-divider></v-divider>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </TabPane>
-              </Tabs>
-              <v-card-actions
-                v-if="tabItem !== filteredType.length"
-                class="pa-0"
-                style="position: absolute; bottom: 18px; right: 25px"
-              >
-                <ShowPage
-                  :total="NumberPage"
-                  :page="currentPage"
-                  @updatePage="handlePageUpdate"
-                />
-                <v-icon
-                  outlined
-                  class="custom-button"
-                  size="32"
-                  @click="
-                    () => {
-                      NumberPage <= 125 ? (NumberPage += 5) : NumberPage
-                    }
-                  "
-                  >mdi-plus</v-icon
+                  </TabPane>
+                </Tabs>
+                <v-card-actions
+                  v-if="tabItem !== filteredType.length"
+                  class="pa-0"
+                  style="position: absolute; bottom: 18px; right: 25px"
                 >
-              </v-card-actions>
-            </div>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-card-text>
+                  <ShowPage
+                    :total="NumberPage"
+                    :page="currentPage"
+                    @updatePage="handlePageUpdate"
+                  />
+                  <v-icon
+                    outlined
+                    class="custom-button"
+                    size="32"
+                    @click="
+                      () => {
+                        NumberPage <= 125 ? (NumberPage += 5) : NumberPage
+                      }
+                    "
+                    >mdi-plus</v-icon
+                  >
+                </v-card-actions>
+              </div>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </div>
+    <div v-else>
+      <v-card flat class="table-container-add">
+        <v-app-bar
+          absolute
+          color="white"
+          height="40"
+          elevate-on-scroll
+          style="z-index: 30"
+          scroll-target="#scrolling-techniques-7"
+        >
+          <!-- <v-spacer></v-spacer> -->
+          <v-btn icon small @click="select = false">
+            <v-icon size="28" style="color: rgb(255, 215, 0)"
+              >mdi-chevron-double-left</v-icon
+            >
+          </v-btn>
+        </v-app-bar>
+        <v-sheet
+          id="scrolling-techniques-7"
+          class="overflow-y-auto"
+          :max-height="'90vh'"
+        >
+          <ViewPage />
+        </v-sheet>
+      </v-card>
+    </div>
   </div>
 </template>
 
@@ -740,7 +887,6 @@ export default {
       search: '',
       idVideo: '',
       name: '',
-      rightDrawer: false,
       isHovered: false,
       video: [],
       tabs: [],
@@ -774,6 +920,9 @@ export default {
       return (description) =>
         description.length > 25 ? `${description.slice(0, 25)}...` : description
     },
+    rightDrawer(){
+      return this.$store.state.rightDrawer;
+    },
   },
   mounted() {
     this.filterMoviesByType()
@@ -785,7 +934,7 @@ export default {
     },
     addVideo() {
       this.handleMenuItemClick(true)
-      this.rightDrawer = true
+      this.$store.commit('SET_STEP_RightDrawer', true);
     },
     // openAdd(){
     //   this.select = false;
@@ -805,7 +954,7 @@ export default {
               videoName: this.search,
             }
           )
-          this.videosearch = response.data.detail.data || []
+          this.videosearch = response.data.detail.data || [];
           // console.log('Search-response:', this.videosearch)
           // console.log('video:',this.video)
         } catch (error) {
@@ -824,30 +973,26 @@ export default {
         this.name = title
         this.handleMenuItemClick(active, videoDetails)
         this.select = false
-        this.rightDrawer = true
+        this.$store.commit('SET_STEP_RightDrawer', true);
       } else if (menu === 1) {
         // this.messageModal('error', 'ຍັງບໍ່ສາມາດແກ້ໄຂວີດີໂອໄດ້.')
         this.handleMenuItemClick(active, videoDetails)
-        this.rightDrawer = true
+        this.$store.commit('SET_STEP_RightDrawer', true);
       } else if (menu === 2) {
         this.idVideo = id
         this.modalactive = true
         this.modal = true
         // console.log(id);
-        this.rightDrawer = false
+        this.$store.commit('SET_STEP_RightDrawer', false);
       } else if (menu === 3) {
         this.idVideo = id
         this.modalactive = false
         this.modal = true
-        this.rightDrawer = false
+        this.$store.commit('SET_STEP_RightDrawer', false);
       } else if (menu === 9) {
-        if (menu === 9) {
-          return this.messageModal('error', 'ຍັງບໍ່ສາມາດເບີ່ງວີດີໂອໄດ້.')
-        } else {
-          this.handleMenuItemClick(active, videoDetails)
-          this.select = true
-          this.rightDrawer = false
-        }
+        this.handleMenuItemClick(active, videoDetails)
+        this.select = true
+        this.$store.commit('SET_STEP_RightDrawer', false);
       } else {
         this.closePost()
       }
@@ -858,7 +1003,7 @@ export default {
       this.filterMoviesByType()
       this.dialogPage = -1
       this.select = false
-      this.rightDrawer = false
+      this.$store.commit('SET_STEP_RightDrawer', false);
       this.$store.commit('SET_STEP_ADD_VIDEO', 0)
     },
     handleMenuItemClick(active, videoDetails) {
@@ -912,7 +1057,7 @@ export default {
           }
         )
         this.video = response.data.detail?.data || []
-        console.log('video :=', this.video)
+        console.log('video ::', this.video)
       } catch (error) {
         console.error('Error fetching videos by type:', error)
       }

@@ -162,7 +162,7 @@
           <h2>ເພີ່ມ</h2>
         </v-btn>
       </div>
-      <br />
+      <br /> <br />
     </v-card-text>
   </div>
 </template>

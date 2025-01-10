@@ -5,6 +5,7 @@ export const state = () => ({
   active_video:true,
   form: {},
   stepAddVideo:0,
+  rightDrawer:false,
 });
 export const mutations = {
   SET_FORM(state, updatedForm) {
@@ -24,5 +25,8 @@ export const mutations = {
   },
   SET_STEP_ADD_VIDEO(state, updatedActive){
     state.stepAddVideo = updatedActive;
+  },
+  SET_STEP_RightDrawer(state, updatedActive){
+    state.rightDrawer = updatedActive;
   },
 };

@@ -37,7 +37,7 @@
         </v-list>
       </v-navigation-drawer>
     </div>
-    <v-app-bar clipped-left fixed app style="background-color: #ffff">
+    <v-app-bar flat clipped-left fixed app style="background-color: #ffff; z-index: 100; border-bottom: 1.5px solid #b3b3b3;">
       <div>
         <v-btn icon @click.stop="miniVariant = !miniVariant">
           <v-icon size="30">mdi-menu</v-icon>

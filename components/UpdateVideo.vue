@@ -25,13 +25,16 @@
       <br /><br />
       <h2 class="custom-font" style="text-decoration: underline">ໂຫຼດຂໍ້ມູນ</h2>
       <v-card outlined class="px-8 py-4 mt-2 colo-with">
-        <v-card-text style="background-color: rgb(248, 248, 248)">
+        <v-card-text
+          class="py-7 px-6"
+          style="background-color: rgb(248, 248, 248)"
+        >
           <v-row>
-            <v-col cols="6" class="pb-0">
+            <v-col cols="6" class="pa-0">
               <v-card
                 class="text-center"
                 flat
-                style="width: 255px; height: 118px"
+                style="width: 255px; height: 145px"
               >
                 <v-img
                   v-if="active_img"
@@ -39,7 +42,7 @@
                   class="text-right"
                   style="
                     width: 245px;
-                    height: 118px;
+                    height: 145px;
                     border-radius: 8px;
                     border: 1px solid rgb(166, 166, 166);
                   "
@@ -61,7 +64,7 @@
                   class="text-right"
                   style="
                     width: 245px;
-                    height: 118px;
+                    height: 145px;
                     border-radius: 8px;
                     border: 1px solid rgb(166, 166, 166);
                   "
@@ -82,11 +85,11 @@
               <br />
               <br />
             </v-col>
-            <v-col cols="6" class="pb-0">
+            <v-col cols="6" class="pa-0">
               <v-card
                 flat
                 class="text-center"
-                style="width: 255px; height: 118px"
+                style="width: 255px; height: 145px"
               >
                 <v-img
                   v-if="active_bkimage"
@@ -94,7 +97,7 @@
                   class="text-right"
                   style="
                     width: 245px;
-                    height: 118px;
+                    height: 145px;
                     border-radius: 8px;
                     border: 1px solid rgb(166, 166, 166);
                   "
@@ -116,7 +119,7 @@
                   class="text-right"
                   style="
                     width: 245px;
-                    height: 118px;
+                    height: 145px;
                     border-radius: 8px;
                     border: 1px solid rgb(166, 166, 166);
                   "
@@ -137,7 +140,7 @@
               <br />
               <br />
             </v-col>
-            <v-col cols="12" class="pa-0 pl-2">
+            <v-col cols="12" class="pa-0 mb-1">
               <h4
                 class="custom-font color-text-load"
                 style="text-decoration: underline"
@@ -145,22 +148,48 @@
                 ຮູບພາບລີວິວ
               </h4>
             </v-col>
-            <v-col
-              v-for="(item, index) in imageview"
-              :key="index"
-              cols="3"
-              class="pa-0 mx-1"
+            <v-col cols="12" v-if="imageview.length <= 0">
+              <v-card
+                flat
+                class="d-flex justify-center align-center"
+                style="width: 100%; height: 100px"
+              >
+                <div class="text-center">
+                  <h5 style="color: #666666; font-style: italic">Image Null</h5>
+                  <div v-if="newimageview.length <= 0">
+                    <Upload
+                      action="//jsonplaceholder.typicode.com/posts/"
+                      :before-upload="handleImageViewNew"
+                    >
+                      <v-icon class="hover-pointer" color="#999999" size="45"
+                        >mdi-plus-circle</v-icon
+                      >
+                    </Upload>
+                  </div>
+                </div>
+              </v-card>
+            </v-col>
+            <v-card
+              v-else
+              flat
+              class="rounded-0 pb-1"
+              style="overflow-x: auto; display: flex; gap: 10px"
             >
-              <v-card flat style="width: 100%; height: 100%">
+              <div
+                v-for="(item, index) in imageview"
+                :key="index"
+                style="height: 100px; width: 120px"
+              >
                 <v-img
                   v-if="item.Img"
                   :src="playURL(item.Img)"
                   class="text-right"
                   style="
-                    width: 100%;
-                    height: 100%;
+                    border: 1px solid #a6a6a6;
                     border-radius: 8px;
-                    border: 1px solid rgb(166, 166, 166);
+                    height: 100px;
+                    width: 120px;
+                    flex: 0 0 auto;
                   "
                 >
                   <Upload
@@ -180,10 +209,10 @@
                   :src="`https://apicenter.laotel.com:9443/tplussocial?img=${item.name}`"
                   class="text-right"
                   style="
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 8px;
                     border: 1px solid rgb(166, 166, 166);
+                    border-radius: 8px;
+                    height: 100px;
+                    width: 120px;
                   "
                 >
                   <Upload
@@ -198,8 +227,94 @@
                     </v-btn>
                   </Upload>
                 </v-img>
+              </div>
+            </v-card>
+            <div
+              v-if="newimageview.length > 0 || imageview.length > 0"
+              style="width: 100%"
+            >
+              <h4
+                class="custom-font color-text-load mb-1"
+                style="text-decoration: underline"
+              >
+                ຮູບພາບລີວິວໃໝ່
+              </h4>
+              <v-card
+                flat
+                width="100%"
+                style="background-color: rgb(248, 248, 248)"
+              >
+                <v-card-actions class="pa-0" width="100%">
+                  <v-card
+                    flat
+                    width="100%"
+                    class="pa-1"
+                    min-height="88"
+                    style="overflow-x: auto; display: flex; gap: 10px"
+                  >
+                    <v-card-actions class="pa-0">
+                      <v-card
+                        v-for="(item, index) in newimageview"
+                        :key="index"
+                        flat
+                        class="mx-1"
+                        style="width: 81px; height: 81px"
+                      >
+                        <v-card flat style="width: 80px; height: 80px">
+                          <v-img
+                            :src="playURL(item)"
+                            class="text-right"
+                            style="
+                              width: 100%;
+                              height: 100%;
+                              border: 1px solid rgb(166, 166, 166);
+                            "
+                          >
+                            <div @click="deleteImageView(index)">
+                              <v-icon class="custom-btn hover-pointer close-btn"
+                                >mdi-close-circle</v-icon
+                              >
+                            </div>
+                          </v-img>
+                        </v-card>
+                      </v-card>
+                    </v-card-actions>
+                  </v-card>
+                  <v-spacer />
+                  <div
+                    style="
+                      width: 80px;
+                      height: 100%;
+                      background-color: rgb(248, 248, 248);
+                    "
+                    class="d-flex justify-center align-center pt-1"
+                  >
+                    <Upload
+                      action="//jsonplaceholder.typicode.com/posts/"
+                      :before-upload="handleImageViewNew"
+                    >
+                      <v-card
+                        class="custom-btn hover-pointer"
+                        height="55"
+                        width="55"
+                        style="
+                          background-color: #ffff;
+                          border: 1px solid #ffff;
+                          border-radius: 18px;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                        "
+                      >
+                        <v-icon color="rgb(217, 217, 217)" size="42"
+                          >mdi-plus</v-icon
+                        >
+                      </v-card>
+                    </Upload>
+                  </div>
+                </v-card-actions>
               </v-card>
-            </v-col>
+            </div>
           </v-row>
         </v-card-text>
       </v-card>
@@ -219,7 +334,8 @@
                 <Select
                   v-model="localFormUpdate.type"
                   :placeholder="
-                    Array.isArray(localFormUpdate.type) && localFormUpdate.type.length > 0
+                    Array.isArray(localFormUpdate.type) &&
+                    localFormUpdate.type.length > 0
                       ? localFormUpdate.type.join(', ')
                       : 'ເລືອກປະເພດວີດີໂອ'
                   "
@@ -257,7 +373,7 @@
               <v-spacer />
               <h3 class="custom-font">ໝອດໝູ່:</h3>
               &nbsp;
-               <v-card flat width="200" class="pa-0 border-input">
+              <v-card flat width="200" class="pa-0 border-input">
                 <Select
                   v-model="localFormUpdate.category"
                   multiple
@@ -287,44 +403,6 @@
       </v-card-text>
       <br />
       <br />
-      <v-dialog
-        v-model="dialog"
-        transition="dialog-bottom-transition"
-        max-width="300"
-      >
-        <v-card>
-          <v-card-text
-            class="txt-center d-flex flex-column align-center justify-center"
-          >
-            <br />
-            <v-icon class="mb-2" size="38" color="rgb(255, 215, 0)"
-              >mdi-alert-circle</v-icon
-            >
-            <h4 class="custom-font">ຕ້ອງການເພີ່ມວີດີໂອຕອນນີ້ ຫຼື ບໍ່?</h4>
-          </v-card-text>
-          <v-card-actions class="justify-end">
-            <v-spacer></v-spacer>
-            <v-btn
-              height="30"
-              text
-              class="custom-font"
-              style="color: #ff0000"
-              @click="reSetValue"
-            >
-              <h4>close</h4>
-            </v-btn>
-            <v-btn
-              height="30"
-              text
-              class="custom-font color-text custom-btn"
-              style="background-color: rgb(255, 215, 0)"
-              @click="AddValueVideo"
-            >
-              <h4>Next</h4>
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
       <v-btn
         width="100%"
         height="50"
@@ -343,13 +421,13 @@ export default {
   data() {
     return {
       value_p: 0,
-      dialog: false,
       imageview: [],
+      newimageview: [],
       editType: false,
       loading: false,
       isHovered: false,
       itemsType: [],
-      localFormUpdate: { ...this.$store.state.form},
+      localFormUpdate: { ...this.$store.state.form },
       category: [],
       editorOptions: {
         theme: 'snow',
@@ -478,30 +556,26 @@ export default {
       return false
     },
     handleImageView(file, index) {
-      console.log('File:', file, 'Index:', index)
       if (file && index !== undefined && index !== null) {
         this.$set(this.imageview[index], 'Img', file)
       } else {
         console.warn('Invalid file or index:', { file, index })
       }
-      console.log(`Updated imageview for index ${index}:`, this.imageview)
       return false
     },
-
-    handleImageUpdate(index, file) {
-      this.$set(this.imageview, index, file)
+    handleImageViewNew(file) {
+      this.newimageview.push(file)
       return false
     },
-    // updatedImg(item, index) {
-    //   console.log(item, '::', index)
-    //   console.log('imageview::', this.imageview);
-    // },
-    // deleteImageView(index) {
-    //   const imageUrl = this.imageview[index]
-    //   console.log(index, this.imageview, this.imageview[index], imageUrl)
-    //   URL.revokeObjectURL(imageUrl)
-    //   this.imageview.splice(index, 1)
-    // },
+    handleImageUpdateNew(index, file) {
+      this.$set(this.newimageview, index, file)
+      return false
+    },
+    deleteImageView(index) {
+      const imageUrl = this.newimageview[index]
+      URL.revokeObjectURL(imageUrl)
+      this.newimageview.splice(index, 1)
+    },
     playURL(file) {
       try {
         return URL.createObjectURL(file)
@@ -515,7 +589,6 @@ export default {
       this.$store.commit('SET_FORM', updatedForm)
       this.$store.commit('SET_STEP_ADD_VIDEO', this.typeofID)
       this.reSetValue()
-      this.dialog = false
     },
     reSetValue() {
       this.localFormUpdate = {
@@ -529,78 +602,117 @@ export default {
         category: [],
       }
       this.imageview = []
-      this.dialog = false
     },
-     updateVideoForm() {
-      console.log("Update - 1 ::" , this.localFormUpdate)
-      console.log('viewVideo::',this.imageview)
-      const { title, des, type, bkimage, image, category } = this.localFormUpdate
+    async updateVideoForm() {
+      console.log('Update - 1 ::', this.localFormUpdate)
+      console.log('Form::', this.form)
+      console.log('viewVideo::', this.imageview)
+      const { id, title, des, type, bkimage, image, category } =
+        this.localFormUpdate
       if (
+        !id ||
         !title ||
         !des ||
-        // !price ||
         !type ||
         !bkimage ||
         !image ||
-        // !reduced ||
         !Array.isArray(category) ||
         !category.length
       ) {
-        
-        return this.messageModal('error');
+        return this.messageModal('error')
       }
-      // const formData = new FormData()
-      // if (bkimage) {
-      //   formData.append('bgImg', bkimage)
+      const formData = new FormData()
+      // if (category.length > 0) {
+      //   formData.append('cateId', category)
       // }
-      // if (image) {
-      //   formData.append('img', image)
+      if (id) {
+        formData.append('videoId', id)
+      }
+      if (typeof bkimage === 'string') {
+        formData.append('bgImg', '')
+      } else {
+        formData.append('oldBgImg', this.form.bkimage)
+        formData.append('bgImg', bkimage)
+      }
+      if (typeof image === 'string') {
+        formData.append('img', '')
+      } else {
+        formData.append('oldImg', this.form.image)
+        formData.append('img', image)
+      }
+      if (Array.isArray(this.imageview)) {
+        const validImageViews = this.imageview
+          .filter((file) => file.Img !== null)
+          .map((file) => ({
+            oldPreviewImg: file.name,
+            previewImg: file.Img,
+          }))
+        const oldPreviewImgs = validImageViews.map((file) => file.oldPreviewImg)
+        formData.append('oldpreviewImg', JSON.stringify(oldPreviewImgs))
+        validImageViews.forEach((file) => {
+          formData.append('previewImg', file.previewImg)
+        })
+      }
+      const videoData = JSON.stringify({
+        name: title || '',
+        description: des || '',
+        typeId: type || '',
+      })
+      formData.append('videoData', videoData)
+      if (Array.isArray(category)) {
+        const categoryAsStrings = category.map((cat) => Number(cat))
+        formData.append('cateId', JSON.stringify(categoryAsStrings))
+      } else {
+        console.error('Category is not an array:', category)
+      }
+      // if (this.localFormUpdate !== null) {
+      //   this.$store.commit('SET_STEP_RightDrawer', false);
+      //   return
       // }
-      // if (this.imageview.length) {
-      //   this.imageview.forEach((file) => {
-      //     formData.append('previewImg', file)
-      //   })
-      // }
-      // const videoData = JSON.stringify({
-      //   name: title || '',
-      //   description: des || '',
-      //   // price: price || "",
-      //   typeId: type || '',
-      //   // reduced: reduced || ""
-      // })
-      // formData.append('videoData', videoData)
-      // if (Array.isArray(category)) {
-      //   const categoryAsStrings = category.map((cat) => String(cat))
-      //   formData.append('videoCategoryInfo', JSON.stringify(categoryAsStrings))
-      // } else {
-      //   console.error('Category is not an array:', category)
-      // }
-      // try {
-      //   const response = await this.$axios.post(
-      //     'http://172.28.17.102:2024/video/addvideo',
-      //     formData,
-      //     {
-      //       headers: {
-      //         'Content-Type': 'multipart/form-data',
-      //       },
-      //     }
-      //   )
-      //   const videoDetail = response.data.detail
-      //   this.dataVideo = {
-      //     id: videoDetail.videoId || '',
-      //     title: videoDetail.videoName || '',
-      //     des: des || '',
-      //     type: type || '',
-      //     image: image || null,
-      //   }
-      //   this.typeofID = type
-      //   this.messageModal('success')
-      // } catch (error) {
-      //   console.error(
-      //     'Error fetching data:',
-      //     error.response ? error.response.data : error.message
-      //   )
-      // } 
+      try {
+        const response = await this.$axios.post(
+          'http://172.28.17.102:2024/video/updatevideo',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+        const videoDetail = response.data.detail
+        this.dataVideo = {
+          id: videoDetail.videoId || '',
+          title: videoDetail.videoName || '',
+          des: des || '',
+          type: type || '',
+          image: image || null,
+        }
+        this.typeofID = type
+        if (this.newimageview.length > 0) {
+          const formData = new FormData()
+          formData.append('videoId', id)
+          this.newimageview.forEach((file) => {
+            formData.append('previewImg', file)
+          })
+          const responseView = await this.$axios.post(
+            'http://172.28.17.102:2024/video/addMoreDetail',
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+          )
+          console.log('Additional details added successfully:', responseView)
+        }
+        this.$store.commit('SET_STEP_RightDrawer', false);
+        this.messageModal('success');
+      } catch (error) {
+        console.error(
+          'Error fetching data:',
+          error.response ? error.response.data : error.message
+        )
+      }
     },
     messageModal(type) {
       this.$Message[type]({
@@ -613,8 +725,6 @@ export default {
       })
       if (type === 'error') {
         this.errorMessage()
-      } else {
-        this.dialog = true
       }
     },
     errorMessage() {
@@ -677,7 +787,7 @@ export default {
 .close-btn {
   border-top-left-radius: 0px;
   border-bottom-right-radius: 0px;
-  outline: 0px solid black;
+  border: 0px solid rgb(255, 255, 255);
   background-color: #ffff;
 }
 .close-btn:hover {

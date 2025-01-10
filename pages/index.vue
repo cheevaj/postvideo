@@ -172,9 +172,7 @@ export default {
     },
     totalVideoCount() {
       return this.gropvideo.reduce((total, item) => {
-        return (
-          total + (item.videos ? item.videos.length : 0)
-        )
+        return total + (item.videos ? item.videos.length : 0)
       }, 0)
     },
     viewVideoCount() {
@@ -201,7 +199,7 @@ export default {
           }
         )
         this.gropvideo = response.data.detail?.data || []
-        console.log('Fetched videos:', this.gropvideo, this.filteredType)
+        // console.log('Fetched videos:', this.gropvideo, this.filteredType)
         this.createChart()
       } catch (error) {
         console.error('Error fetching videos by type:', error)
@@ -209,18 +207,21 @@ export default {
     },
     async dataResponseAll() {
       try {
-        const response = await this.$axios.post(
-          'http://172.28.17.102:2024/video/getallvideotype'
-        )
-        this.itemsType = response.data.detail || []
-        // typeId: 663976489
+        // Perform both requests simultaneously
+        const [videoTypeResponse, topVideoResponse] = await Promise.all([
+          this.$axios.post('http://172.28.17.102:2024/video/getallvideotype'),
+          this.$axios.post('http://172.28.17.102:2024/video/topVideo'),
+        ])
+        this.itemsType = videoTypeResponse.data.detail || [];
+        console.log('topVideoResponse::',topVideoResponse.data.detail.data)
+        this.videoMaxview = topVideoResponse.data.detail.data || [];
         this.pageVideo = this.filteredType.map((item) => ({
           typeId: item.typeId,
           limit: 100,
         }))
         await this.handleSearch()
       } catch (error) {
-        console.error('Error fetching video types:', error)
+        console.error('Error fetching data:', error)
       }
     },
     isShowType() {
@@ -321,8 +322,8 @@ export default {
       this.addPackage = false
     },
     async saveAllPackage() {
-      const { vpName, discount, durations, image, price } = this.localPackage;
-      console.log("::", vpName, discount, durations, image, price )
+      const { vpName, discount, durations, image, price } = this.localPackage
+      // console.log('::', vpName, discount, durations, image, price)
       if (!vpName || !discount || !durations || !image || !price) {
         this.messageModal('error')
         return
@@ -348,14 +349,14 @@ export default {
             },
           }
         )
-        if ( response.status === 201 || response.status === 201) {
+        if (response.status === 201 || response.status === 201) {
           this.messageModal('success')
           this.dataResponsePackage()
         } else {
           console.error('Unexpected response status:', response.status)
           this.messageModal('error', `Unexpected status: ${response.status}`)
         }
-        this.cancelPackage();
+        this.cancelPackage()
       } catch (error) {
         console.error(
           'Error fetching data:',
@@ -723,19 +724,27 @@ export default {
                       <div>
                         <p class="custom-font">
                           ຊື່ເເພັກເກັດ:
-                          <span class="custom-font" style="color: #000">{{ item.vpName }}</span>
+                          <span class="custom-font" style="color: #000">{{
+                            item.vpName
+                          }}</span>
                         </p>
                         <p class="custom-font">
                           ລາຄາ:
-                          <span class="custom-font" style="color: #000">{{ formatNumber(item.price) }}</span>
+                          <span class="custom-font" style="color: #000">{{
+                            formatNumber(item.price)
+                          }}</span>
                         </p>
                         <p class="custom-font">
-                          ອາຍຸໃຊ້ງານ: 
-                          <span class="custom-font" style="color: #000;">{{ item.durations }} ມື້</span>
+                          ອາຍຸໃຊ້ງານ:
+                          <span class="custom-font" style="color: #000"
+                            >{{ item.durations }} ມື້</span
+                          >
                         </p>
                         <p class="custom-font">
                           ສ່ອນຫຼຸດ:
-                          <span class="custom-font" style="color: #000;">{{ item.discount }} %</span>
+                          <span class="custom-font" style="color: #000"
+                            >{{ item.discount }} %</span
+                          >
                         </p>
                       </div>
                     </template>
