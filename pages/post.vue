@@ -424,7 +424,7 @@
                                 <v-card
                                   flat
                                   height="85"
-                                  class="text-right mt-2 p"
+                                  class="text-right mt-2"
                                 >
                                   <v-menu
                                     v-model="menu[index]"
@@ -519,7 +519,7 @@
                               </v-col>
                             </v-row>
                           </v-card-text>
-                          <v-divider></v-divider>
+                          <v-divider />
                         </div>
                       </div>
                     </div>
@@ -880,6 +880,7 @@ export default {
       searchvideo: false,
       modal: false,
       modalactive: false,
+      disabledMenu: false,
       select: false,
       dialogPage: -1,
       loading: false,
@@ -896,7 +897,6 @@ export default {
         { title: 'ເເກ້ໄຂ', icon: 'mdi-movie-edit' },
         { title: 'ປິດຂາຍ', icon: 'mdi-movie-off' },
         { title: 'ລົບວີດີໂອ', icon: 'mdi-delete' },
-        // { title: 'ເພີ່ມວີດີໂອ', icon: 'mdi-movie-open-plus' },
       ],
       videosearch: [],
       pageVideo: [],
@@ -920,8 +920,13 @@ export default {
       return (description) =>
         description.length > 25 ? `${description.slice(0, 25)}...` : description
     },
-    rightDrawer(){
-      return this.$store.state.rightDrawer;
+    rightDrawer: {
+      get() {
+        return this.$store.state.rightDrawer
+      },
+      set(value) {
+        this.$store.commit('SET_STEP_RightDrawer', value)
+      },
     },
   },
   mounted() {
@@ -934,7 +939,7 @@ export default {
     },
     addVideo() {
       this.handleMenuItemClick(true)
-      this.$store.commit('SET_STEP_RightDrawer', true);
+      this.$store.commit('SET_STEP_RightDrawer', true)
     },
     // openAdd(){
     //   this.select = false;
@@ -954,7 +959,7 @@ export default {
               videoName: this.search,
             }
           )
-          this.videosearch = response.data.detail.data || [];
+          this.videosearch = response.data.detail.data || []
           // console.log('Search-response:', this.videosearch)
           // console.log('video:',this.video)
         } catch (error) {
@@ -973,26 +978,25 @@ export default {
         this.name = title
         this.handleMenuItemClick(active, videoDetails)
         this.select = false
-        this.$store.commit('SET_STEP_RightDrawer', true);
+        this.$store.commit('SET_STEP_RightDrawer', true)
       } else if (menu === 1) {
-        // this.messageModal('error', 'ຍັງບໍ່ສາມາດແກ້ໄຂວີດີໂອໄດ້.')
         this.handleMenuItemClick(active, videoDetails)
-        this.$store.commit('SET_STEP_RightDrawer', true);
+        this.$store.commit('SET_STEP_RightDrawer', true)
       } else if (menu === 2) {
         this.idVideo = id
         this.modalactive = true
         this.modal = true
         // console.log(id);
-        this.$store.commit('SET_STEP_RightDrawer', false);
+        this.$store.commit('SET_STEP_RightDrawer', false)
       } else if (menu === 3) {
         this.idVideo = id
         this.modalactive = false
         this.modal = true
-        this.$store.commit('SET_STEP_RightDrawer', false);
+        this.$store.commit('SET_STEP_RightDrawer', false)
       } else if (menu === 9) {
         this.handleMenuItemClick(active, videoDetails)
         this.select = true
-        this.$store.commit('SET_STEP_RightDrawer', false);
+        this.$store.commit('SET_STEP_RightDrawer', false)
       } else {
         this.closePost()
       }
@@ -1003,7 +1007,7 @@ export default {
       this.filterMoviesByType()
       this.dialogPage = -1
       this.select = false
-      this.$store.commit('SET_STEP_RightDrawer', false);
+      this.$store.commit('SET_STEP_RightDrawer', false)
       this.$store.commit('SET_STEP_ADD_VIDEO', 0)
     },
     handleMenuItemClick(active, videoDetails) {
@@ -1208,5 +1212,14 @@ export default {
   font-style: italic;
   transform: rotate(-45deg);
   font-size: 12px;
+}
+
+.hover-menu-edit {
+  color: #000 !important;
+  transition: color 0.3s ease;
+}
+
+.hover-menu-edit:hover {
+  color: #ffcc00 !important;
 }
 </style>

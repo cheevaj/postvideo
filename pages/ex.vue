@@ -1,37 +1,35 @@
-<script>
-export default {
-  data: () => ({
-    model: null,
-  }),
+<style>
+.demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content {
+  height: 120px;
+  margin-top: -16px;
 }
-</script>
+
+.demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content > .ivu-tabs-tabpane {
+  background: #fff;
+  padding: 16px;
+}
+
+.demo-tabs-style1 > .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+  border-color: transparent;
+}
+
+.demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
+  border-color: #fff;
+}
+</style>
 <template>
-  <div>
-    <v-sheet class="mx-auto red pa-0" elevation="8" max-width="800">
-      <v-slide-group
-        v-model="model"
-        class="pa-0"
-        active-class="success"
-        show-arrows
-      >
-        <v-slide-item v-for="n in 15" :key="n" v-slot="{ active, toggle }">
-          <v-card
-            :color="active ? undefined : 'grey lighten-1'"
-            class="ma-4"
-            height="200"
-            width="100"
-            @click="toggle"
-          >
-            <v-row class="fill-height" align="center" justify="center">
-              <v-scale-transition>
-                <v-icon v-if="active" color="white" size="48"
-                  >mdi-close-circle-outline</v-icon
-                >
-              </v-scale-transition>
-            </v-row>
-          </v-card>
-        </v-slide-item>
-      </v-slide-group>
-    </v-sheet>
+  <div
+    span="12"
+    class="demo-tabs-style1"
+    style="background: #e3e8ee; padding: 16px"
+  >
+    <Tabs type="card">
+      <TabPane label="标签一" style="background-color: red;">标签一的内容</TabPane>
+      <TabPane label="标签二">标签二的内容</TabPane>
+      <TabPane label="标签三">标签三的内容</TabPane>
+    </Tabs>
   </div>
 </template>
+<script>
+export default {}
+</script>

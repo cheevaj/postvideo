@@ -199,7 +199,6 @@ export default {
           }
         )
         this.gropvideo = response.data.detail?.data || []
-        // console.log('Fetched videos:', this.gropvideo, this.filteredType)
         this.createChart()
       } catch (error) {
         console.error('Error fetching videos by type:', error)
@@ -207,7 +206,6 @@ export default {
     },
     async dataResponseAll() {
       try {
-        // Perform both requests simultaneously
         const [videoTypeResponse, topVideoResponse] = await Promise.all([
           this.$axios.post('http://172.28.17.102:2024/video/getallvideotype'),
           this.$axios.post('http://172.28.17.102:2024/video/topVideo'),

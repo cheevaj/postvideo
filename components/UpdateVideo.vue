@@ -13,9 +13,7 @@
         />
       </h2>
       <br /><br />
-      <h2 class="custom-font" style="text-decoration: underline">
-        ລາຍລະອຽດວີດີໂອ
-      </h2>
+      <h2 class="custom-font" style="text-decoration: underline">ລາຍລະອຽດ</h2>
       <quill-editor
         v-model="localFormUpdate.des"
         :options="editorOptions"
@@ -403,6 +401,163 @@
       </v-card-text>
       <br />
       <br />
+      <h2 class="custom-font" style="text-decoration: underline">ວິດີໂອ</h2>
+      <v-col cols="12" v-if="form.video.length <= 0">
+        <v-card
+          flat
+          class="d-flex justify-center align-center"
+          style="width: 100%; height: 100px"
+        >
+          <div class="text-center">
+            <h4 style="color: #666666; font-style: italic">Video Null</h4>
+          </div>
+        </v-card>
+      </v-col>
+      <div
+        v-else
+        span="12"
+        style="background: rgb(239, 239, 239); padding: 16px"
+      >
+        <Tabs
+          type="card"
+          class="custom-font"
+          style="margin-top: 6px; padding: 0px"
+        >
+          <TabPane
+            v-for="(itemType, id) in videonew"
+            :key="id"
+            :label="itemType.quality"
+            class="custom-font border-solis"
+            style="
+              margin-top: -16px;
+              border-radius: 0px;
+              border: 0px solid #ffff;
+            "
+          >
+            <v-card-text class="pa-6 pb-6">
+              <v-row>
+                <v-col cols="6">
+                  <v-card
+                    flat
+                    style="
+                      min-height: 125px;
+                      min-width: 245px;
+                      position: relative;
+                    "
+                  >
+                    <video
+                      :src="
+                        itemType.video && itemType.video !== null
+                          ? playURL(itemType.video)
+                          : `https://apicenter.laotel.com:9443/tplussocial/VideoStreaming?v=${itemType.filename}`
+                      "
+                      controls
+                      height="155"
+                      style="
+                        width: 100%;
+                        border-radius: 8px;
+                        border: 0px solid rgb(166, 166, 166);
+                        background-color: #000;
+                      "
+                    ></video>
+                    <div
+                      style="
+                        position: absolute;
+                        top: 0.5px;
+                        right: 0.5px;
+                        border-top-right-radius: 7px;
+                      "
+                    >
+                      <Upload
+                        action="//jsonplaceholder.typicode.com/posts/"
+                        :before-upload="(file) => uploadVideo(file, id)"
+                      >
+                        <v-btn
+                          class="close-btn px-1"
+                          small
+                          style="border-top-right-radius: 7px"
+                        >
+                          ແກ້ໄຂ
+                          <span
+                            ><v-icon size="12">mdi-pencil-outline</v-icon></span
+                          >
+                        </v-btn>
+                      </Upload>
+                    </div>
+                  </v-card>
+                </v-col>
+                <v-col cols="6" class="pb-0">
+                  <v-card
+                    flat
+                    style="width: 245px; height: 155px; border-radius: 8px"
+                  >
+                    <v-card-text
+                      v-if="
+                        itemType.video !== null && itemType.imageVideo === null
+                      "
+                      height="240"
+                      class="pa-0"
+                      style="
+                        background-color: #ffff;
+                        width: 100%;
+                        border-radius: 8px;
+                      "
+                    >
+                      <div class="pa-4">
+                        <Upload
+                          type="drag"
+                          action="//jsonplaceholder.typicode.com/posts/"
+                          style="width: 100%; height: 120px"
+                          :before-upload="(file) => uploadImageVideo(file, id)"
+                        >
+                          <div style="padding: 10px 0px; height: 120px">
+                            <Icon
+                              type="md-images"
+                              size="52"
+                              style="color: rgb(255, 215, 0)"
+                            />
+                            <p class="custom-font color-text-load">
+                              ໂຫຼດຮູບວີດີໂອ
+                            </p>
+                          </div>
+                        </Upload>
+                      </div>
+                    </v-card-text>
+                    <v-img
+                      v-else
+                      :src="
+                        itemType.imageVideo && itemType.imageVideo !== null
+                          ? playURL(itemType.imageVideo)
+                          : `https://apicenter.laotel.com:9443/tplussocial?img=${itemType.thumbnail}`
+                      "
+                      class="text-right"
+                      style="
+                        width: 245px;
+                        height: 155px;
+                        border-radius: 8px;
+                        border: 1px solid rgb(166, 166, 166);
+                      "
+                    >
+                      <Upload
+                        action="//jsonplaceholder.typicode.com/posts/"
+                        :before-upload="(file) => uploadImageVideo(file, id)"
+                      >
+                        <v-btn class="close-btn px-1" small>
+                          ແກ້ໄຂ<span
+                            ><v-icon size="12">mdi-pencil-outline</v-icon></span
+                          >
+                        </v-btn>
+                      </Upload>
+                    </v-img>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </TabPane>
+        </Tabs>
+      </div>
+      <br />
+      <br />
       <v-btn
         width="100%"
         height="50"
@@ -426,6 +581,7 @@ export default {
       editType: false,
       loading: false,
       isHovered: false,
+      videonew: [],
       itemsType: [],
       localFormUpdate: { ...this.$store.state.form },
       category: [],
@@ -440,7 +596,7 @@ export default {
           ],
         },
       },
-      dataVideo: {},
+      qualityIdGet: [],
       typeofID: 0,
     }
   },
@@ -493,18 +649,36 @@ export default {
   },
   methods: {
     async dataResponseAll() {
-      console.log('Form-Update:', this.form)
-      console.log('Update::', this.localFormUpdate.category)
+      console.log('Fetching data for form update...')
       const apiCalls = [
         this.$axios.post('http://172.28.17.102:2024/video/getallvideotype'),
         this.$axios.post('http://172.28.17.102:2024/video/getallvideocategory'),
+        this.$axios.post('http://172.28.17.102:2024/video/getallvideoquality'),
       ]
       try {
         const responses = await Promise.all(apiCalls)
-        const [videoType, videocategory] = responses
+        const [videoType, videocategory, qualityId] = responses
         this.itemsType = videoType.data.detail
         this.category = videocategory.data.detail
-        console.log(this.category)
+        this.qualityIdGet = JSON.parse(JSON.stringify(qualityId.data.detail))
+        const video = this.$store.state.form.video || []
+        if (video.length > 0 && this.qualityIdGet) {
+          this.videonew = video.map((item, index) => {
+            const matchingQuality = this.qualityIdGet.find(
+              (q) => q.quality === item.videoQualitydata.quality
+            )
+            return {
+              filename: item.filename || '',
+              active: false,
+              thumbnail: item.thumbnail,
+              quality: item.videoQualitydata.quality,
+              qualityid: matchingQuality ? matchingQuality.qualityId : 0,
+              imageVideo: null,
+              video: null,
+              index,
+            }
+          })
+        }
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -547,14 +721,6 @@ export default {
       }
       return false
     },
-    handleVideoUpload(video) {
-      if (video && video.size > 0) {
-        const updatedActive = true
-        this.$store.commit('SET_ACTIVE_VIDEO', updatedActive)
-        this.localFormUpdate.video = video
-      }
-      return false
-    },
     handleImageView(file, index) {
       if (file && index !== undefined && index !== null) {
         this.$set(this.imageview[index], 'Img', file)
@@ -567,28 +733,41 @@ export default {
       this.newimageview.push(file)
       return false
     },
-    handleImageUpdateNew(index, file) {
-      this.$set(this.newimageview, index, file)
-      return false
-    },
     deleteImageView(index) {
       const imageUrl = this.newimageview[index]
       URL.revokeObjectURL(imageUrl)
       this.newimageview.splice(index, 1)
     },
+    uploadImageVideo(file, index) {
+      if (file && index !== undefined && index !== null) {
+        this.$set(this.videonew[index], 'imageVideo', file)
+        this.$set(this.videonew[index], 'active', true)
+      } else {
+        console.warn('Invalid file or index:', { file, index })
+      }
+      return false
+    },
+    uploadVideo(file, index) {
+      if (file && index !== undefined && index !== null) {
+        this.$set(this.videonew[index], 'video', file)
+        this.$set(this.videonew[index], 'active', true)
+      } else {
+        console.warn('Invalid file or index:', { file, index })
+      }
+      return false
+    },
     playURL(file) {
-      try {
-        return URL.createObjectURL(file)
-      } catch (e) {
-        console.error('Error creating object URL:', e)
+      if (file instanceof Blob || file instanceof File) {
+        try {
+          return URL.createObjectURL(file)
+        } catch (e) {
+          console.error('Error creating object URL:', e)
+          return ''
+        }
+      } else {
+        console.warn('Invalid file type for URL.createObjectURL:', file)
         return ''
       }
-    },
-    AddValueVideo() {
-      const updatedForm = this.dataVideo
-      this.$store.commit('SET_FORM', updatedForm)
-      this.$store.commit('SET_STEP_ADD_VIDEO', this.typeofID)
-      this.reSetValue()
     },
     reSetValue() {
       this.localFormUpdate = {
@@ -604,27 +783,33 @@ export default {
       this.imageview = []
     },
     async updateVideoForm() {
-      console.log('Update - 1 ::', this.localFormUpdate)
-      console.log('Form::', this.form)
-      console.log('viewVideo::', this.imageview)
       const { id, title, des, type, bkimage, image, category } =
         this.localFormUpdate
-      if (
-        !id ||
-        !title ||
-        !des ||
-        !type ||
-        !bkimage ||
-        !image ||
-        !Array.isArray(category) ||
-        !category.length
-      ) {
-        return this.messageModal('error')
+      let UpdateVideos = []
+      if (this.videonew.length > 0) {
+        UpdateVideos = this.videonew.filter((video) => video.active === true)
+        if (UpdateVideos.length > 0) {
+          const invalidVideo = UpdateVideos.find(
+            (video) => video.video && video.imageVideo === null
+          )
+          if (invalidVideo) {
+            this.messageModal(
+              'warning',
+              `ວີດີໂອທີ່ມີ quality ${invalidVideo.quality} ບໍ່ມິຮູບວີດີໂອ`
+            )
+            return
+          }
+        }
+        console.log('UpdateVideos::', UpdateVideos)
+      }
+      if (!id || !title || !des || !type) {
+        this.messageModal(
+          'warning',
+          'ກະລຸນາກວດເບິ່ງຊື່ວີດີໂອ,ລາຍລະອຽດຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ.'
+        )
+        return
       }
       const formData = new FormData()
-      // if (category.length > 0) {
-      //   formData.append('cateId', category)
-      // }
       if (id) {
         formData.append('videoId', id)
       }
@@ -666,7 +851,8 @@ export default {
         console.error('Category is not an array:', category)
       }
       // if (this.localFormUpdate !== null) {
-      //   this.$store.commit('SET_STEP_RightDrawer', false);
+      //   // this.$store.commit('SET_STEP_RightDrawer', false)
+      //   console.log('Check!')
       //   return
       // }
       try {
@@ -679,14 +865,7 @@ export default {
             },
           }
         )
-        const videoDetail = response.data.detail
-        this.dataVideo = {
-          id: videoDetail.videoId || '',
-          title: videoDetail.videoName || '',
-          des: des || '',
-          type: type || '',
-          image: image || null,
-        }
+        console.log(response)
         this.typeofID = type
         if (this.newimageview.length > 0) {
           const formData = new FormData()
@@ -705,8 +884,44 @@ export default {
           )
           console.log('Additional details added successfully:', responseView)
         }
-        this.$store.commit('SET_STEP_RightDrawer', false);
-        this.messageModal('success');
+        if (UpdateVideos.length > 0) {
+          for (const [index, numero] of UpdateVideos.entries()) {
+            const formData = new FormData()
+            formData.append('name', numero.video)
+            formData.append('oldvideoId', id)
+            formData.append('thumbnail', numero.imageVideo)
+            formData.append('oldqualityId', numero.qualityid)
+            formData.append('Oldname', numero.filename)
+            formData.append('Oldthumbnail', numero.thumbnail)
+            const videoData = JSON.stringify({
+              qualityId: numero.qualityid || '',
+              videoId: id || '',
+            })
+            formData.append('videoData', videoData)
+            try {
+              const responseView = await this.$axios.post(
+                'http://172.28.17.102:2024/video/updatevideoqualityinfo',
+                formData,
+                {
+                  headers: {
+                    'Content-Type': 'multipart/form-data',
+                  },
+                }
+              )
+              console.log(responseView.data)
+              if (index < UpdateVideos.length - 1) {
+                const fixedDelay = 200
+                await new Promise((resolve) => setTimeout(resolve, fixedDelay))
+              }
+            } catch (error) {
+              console.error('Error sending message to:', numero, error)
+              this.messageModal('error', error)
+              continue
+            }
+          }
+        }
+        this.$store.commit('SET_STEP_RightDrawer', false)
+        this.messageModal('success', 'ແກ້ໄຂ້ຂໍ້ມູນສຳເລັດ.')
       } catch (error) {
         console.error(
           'Error fetching data:',
@@ -714,23 +929,10 @@ export default {
         )
       }
     },
-    messageModal(type) {
+    messageModal(type, conten) {
       this.$Message[type]({
         background: true,
-        content: `<span class="custom-font">${
-          type === 'success'
-            ? 'ເພີ່ມຂໍ້ມູນວີດີໂອສໍາເລັດ.'
-            : 'ເພີ່ມຂໍ້ມູນວີດີໂອບໍ່ສໍາເລັດ.'
-        }<span>`,
-      })
-      if (type === 'error') {
-        this.errorMessage()
-      }
-    },
-    errorMessage() {
-      this.$Notice.error({
-        title: `<span class="custom-font">${'ຂໍ້ມູນວ່າງ'}</span>`,
-        desc: `<span class="custom-font">${'ກະລຸນາກວດເບິ່ງລາຍລະອຽດຂໍ້ມູນທັງໝົດແລະລອງໃໝ່ອີກຄັ້ງ.'}</span>`,
+        content: `<span class="custom-font">${conten}<span>`,
       })
     },
   },

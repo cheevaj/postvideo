@@ -21,7 +21,6 @@
           />
         </div>
         <div class="details">
-          <!-- <h1>{{ name }}</h1> -->
           <h1>{{ form.title }}</h1>
           <p
             class="px-1"
