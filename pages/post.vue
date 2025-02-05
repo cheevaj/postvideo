@@ -60,79 +60,6 @@
         </v-card-text>
       </v-card>
     </v-dialog> -->
-      <Modal
-        v-model="modal"
-        draggable
-        scrollable
-        :mask-closable="false"
-        width="340"
-        style="padding: 0px"
-      >
-        <template #header>
-          <v-card-actions
-            style="color: rgb(255, 215, 0); text-align: center; padding: 2px"
-          >
-            <v-spacer />
-            <h3 class="custom-font">
-              {{
-                modalactive
-                  ? 'ທ່ານຕ້ອງການປິດຂາຍວີດີໂອນີ້ ຫຼື ບໍ?'
-                  : 'ທ່ານຕ້ອງການລົບວີດີໂອນີ້ ຫຼື ບໍ?'
-              }}
-            </h3>
-            <v-spacer />
-          </v-card-actions>
-        </template>
-        <div>
-          <div style="text-align: center">
-            <v-card
-              flat
-              class="table-container-add scrollbar"
-              style="
-                height: 50px;
-                z-index: 100;
-                margin-top: 2px;
-                overflow-y: auto;
-              "
-            >
-              <p v-if="modalactive" class="custom-font">
-                ຖ້າທ່ານປິດວີດີໂອ, ຜູ້ໃຊ້ງານຄົນອື່ນໆຈະບໍ່ເຫັນ ເເລະ
-                ບໍ່ສາມາດຊື່ວີດີໂອນີ້ໄດ້. ທ່ານຕ້ອງການປິດຂາຍ ຫຼື ບໍ?
-              </p>
-              <p v-else class="custom-font">
-                ຖ້າທ່ານລົບວີດີໂອ,
-                ຂໍ້ມູນທັງໝົດຂອງວີດີໂອນີ້ຈະຖືກລົບອອກຈາກຖານຂໍ້ມູນ<span
-                  style="color: #ff3300"
-                  >!</span
-                >. ທ່ານຕ້ອງການລົບວີດີໂອນີ້ ຫຼື ບໍ?
-              </p>
-            </v-card>
-          </div>
-        </div>
-        <template #footer>
-          <Button
-            v-if="modalactive"
-            size="large"
-            long
-            style="background-color: #ff3300; color: #ffff"
-            @click="activeVideo(idVideo)"
-          >
-            <v-icon color="#ffff">{{ 'mdi-play-box-lock-outline' }}</v-icon
-            >&nbsp;
-            <span class="custom-font">{{ 'ປິດຂາຍວີດີໂອ' }}</span>
-          </Button>
-          <Button
-            v-else
-            size="large"
-            long
-            style="background-color: #ff3300; color: #ffff"
-            @click="deleteVideo(idVideo)"
-          >
-            <v-icon color="#ffff">mdi-delete-empty</v-icon>&nbsp;
-            <span class="custom-font">ລົບວີດີໂອ</span>
-          </Button>
-        </template>
-      </Modal>
       <v-card-text class="ma-0 py-8 px-12">
         <h1 class="custom-font my-4">ໂພດ</h1>
         <v-row>
@@ -212,6 +139,7 @@
                                       price: item_video.price,
                                       type: item_video.typeId,
                                       bkimage: item_video.bgImg,
+                                      isActive:item_video.isActive,
                                       video:
                                         item_video.videoQualityinfodata ||
                                         item_video.videoSeriesData,
@@ -315,6 +243,7 @@
                                           price: item_video.price,
                                           type: item_video.typeId,
                                           bkimage: item_video.bgImg,
+                                          isActive:item_video.isActive,
                                           video:
                                             item_video.videoQualityinfodata ||
                                             item_video.videoSeriesData,
@@ -352,7 +281,8 @@
                                         })
                                       "
                                     >
-                                      {{ item_video.name }}
+                                      {{ truncatedName(item_video.name, 80) }}
+                                      <!-- {{ item_video.name }} -->
                                     </span>
                                   </h3>
                                   <v-card-text class="pa-0 custom-font">
@@ -367,6 +297,7 @@
                                           price: item_video.price,
                                           type: item_video.typeId,
                                           bkimage: item_video.bgImg,
+                                          isActive:item_video.isActive,
                                           video:
                                             item_video.videoQualityinfodata ||
                                             item_video.videoSeriesData,
@@ -415,12 +346,28 @@
                                   </v-card-text>
                                 </v-card>
                               </v-col>
-                              <!-- <v-col cols="1"   class="pl-0">
-                              <v-card flat height="85" style="align-items: center; justify-content: center; padding-top: 25px;">
-                                <v-btn text style="background-color: rgb(51, 204, 51); color: #ffff; border-radius: 10px;">Active</v-btn>
-                              </v-card>
-                            </v-col> -->
-                              <v-col cols="2" class="py-0 pr-0">
+                              <v-col cols="1" class="px-0 text-end">
+                                <v-card
+                                  flat
+                                  height="85"
+                                  style="
+                                    align-items: center;
+                                    justify-content: center;
+                                    padding-top: 25px;
+                                  "
+                                >
+                                  <h4
+                                    v-if="item_video.isActive"
+                                    style="color: #33cc33"
+                                  >
+                                    Active
+                                  </h4>
+                                  <h4 v-else style="color: #e60000">
+                                    Inactive
+                                  </h4>
+                                </v-card>
+                              </v-col>
+                              <v-col cols="1" class="py-0 pr-0">
                                 <v-card
                                   flat
                                   height="85"
@@ -472,9 +419,12 @@
                                               price: item_video.price,
                                               type: item_video.typeId,
                                               bkimage: item_video.bgImg,
+                                              isActive:item_video.isActive,
                                               video:
-                                                item_video.videoQualityinfodata ||
-                                                item_video.videoSeriesData,
+                                                item_video.videoQualityinfodata
+                                                  .length > 0
+                                                  ? item_video.videoQualityinfodata
+                                                  : item_video.videoSeriesData,
                                               time: item_video.time,
                                               resolution:
                                                 item_video.videoQualityinfodata
@@ -503,7 +453,23 @@
                                           "
                                           class="custom-font mouse-hover-menu"
                                         >
-                                          <v-list-item-content>
+                                          <v-list-item-content
+                                            v-if="item_index === 2"
+                                          >
+                                            <v-card-actions class="pa-0">
+                                              <v-icon>{{
+                                                item_video.isActive
+                                                  ? item_menu.icon
+                                                  : item_menu.icon1
+                                              }}</v-icon
+                                              >&nbsp;&nbsp;{{
+                                                item_video.isActive
+                                                  ? item_menu.title
+                                                  : item_menu.title1
+                                              }}
+                                            </v-card-actions>
+                                          </v-list-item-content>
+                                          <v-list-item-content v-else>
                                             <v-card-actions class="pa-0">
                                               <v-icon>{{
                                                 item_menu.icon
@@ -561,6 +527,7 @@
                                       price: item.price,
                                       type: item.typeId,
                                       bkimage: item.bgImg,
+                                      isActive:item_video.isActive,
                                       video:
                                         item.videoQualityinfodata ||
                                         item.videoSeriesData,
@@ -640,7 +607,7 @@
                                   </v-img>
                                 </v-card>
                               </v-col>
-                              <v-col cols="8" class="px-1">
+                              <v-col cols="7" class="px-1">
                                 <v-card flat height="85" class="rounded-0">
                                   <h3 class="py-1 px-0">
                                     <span
@@ -654,6 +621,7 @@
                                           price: item.price,
                                           type: item.typeId,
                                           bkimage: item.bgImg,
+                                          isActive:item_video.isActive,
                                           video:
                                             item.videoQualityinfodata ||
                                             item.videoSeriesData,
@@ -675,7 +643,7 @@
                                         })
                                       "
                                     >
-                                      {{ item.name }}
+                                      {{ truncatedName(item.name, 80) }}
                                     </span>
                                   </h3>
                                   <v-card-text class="pa-0 custom-font">
@@ -690,6 +658,7 @@
                                           price: item.price,
                                           type: item.typeId,
                                           bkimage: item.bgImg,
+                                          isActive:item_video.isActive,
                                           video:
                                             item.videoQualityinfodata ||
                                             item.videoSeriesData,
@@ -720,11 +689,27 @@
                                   </v-card-text>
                                 </v-card>
                               </v-col>
-                              <!-- <v-col cols="1"   class="pl-0">
-                              <v-card flat height="85" style="align-items: center; justify-content: center; padding-top: 25px;">
-                                <v-btn text style="background-color: rgb(51, 204, 51); color: #ffff; border-radius: 10px;">Active</v-btn>
-                              </v-card>
-                            </v-col> -->
+                              <v-col cols="1" class="pl-0">
+                                <v-card
+                                  flat
+                                  height="85"
+                                  style="
+                                    align-items: center;
+                                    justify-content: center;
+                                    padding-top: 25px;
+                                  "
+                                >
+                                  <v-btn
+                                    text
+                                    style="
+                                      background-color: rgb(51, 204, 51);
+                                      color: #ffff;
+                                      border-radius: 10px;
+                                    "
+                                    >Active</v-btn
+                                  >
+                                </v-card>
+                              </v-col>
                               <v-col cols="2" class="py-0 pr-0">
                                 <v-card
                                   flat
@@ -777,6 +762,7 @@
                                               price: item.price,
                                               type: item.typeId,
                                               bkimage: item.bgImg,
+                                              isActive:item_video.isActive,
                                               video:
                                                 item.videoQualityinfodata ||
                                                 item.videoSeriesData,
@@ -788,7 +774,23 @@
                                           "
                                           class="custom-font mouse-hover-menu"
                                         >
-                                          <v-list-item-content>
+                                          <v-list-item-content
+                                            v-if="item_index === 2"
+                                          >
+                                            <v-card-actions class="pa-0">
+                                              <v-icon>{{
+                                                item_video.isActive
+                                                  ? item_menu.icon
+                                                  : item_menu.icon1
+                                              }}</v-icon
+                                              >&nbsp;&nbsp;{{
+                                                item_video.isActive
+                                                  ? item_menu.title
+                                                  : item_menu.title1
+                                              }}
+                                            </v-card-actions>
+                                          </v-list-item-content>
+                                          <v-list-item-content v-else>
                                             <v-card-actions class="pa-0">
                                               <v-icon>{{
                                                 item_menu.icon
@@ -810,6 +812,113 @@
                     </div>
                   </TabPane>
                 </Tabs>
+                <Modal
+                  v-model="modal"
+                  draggable
+                  scrollable
+                  :mask-closable="false"
+                  width="340"
+                  style="padding: 0px"
+                >
+                  <template #header>
+                    <v-card-actions
+                      style="
+                        color: rgb(255, 215, 0);
+                        text-align: center;
+                        padding: 2px;
+                      "
+                    >
+                      <v-spacer />
+                      <h3 v-if="dialogPage === 2" class="custom-font">
+                        {{
+                          isActiveVdo
+                            ? 'ທ່ານຕ້ອງການປິດວີດີໂອນີ້ ຫຼື ບໍ?'
+                            : 'ທ່ານຕ້ອງການເປິດວີດີໂອນີ້ ຫຼື ບໍ?'
+                        }}
+                      </h3>
+                      <h3 v-else class="custom-font">
+                        ທ່ານຕ້ອງການລົບວີດີໂອນີ້ ຫຼື ບໍ?
+                      </h3>
+                      <v-spacer />
+                    </v-card-actions>
+                  </template>
+                  <div style="text-align: center">
+                    <v-card
+                      flat
+                      class="table-container-add scrollbar"
+                      style="
+                        height: 50px;
+                        z-index: 100;
+                        margin-top: 2px;
+                        overflow-y: auto;
+                      "
+                    >
+                      <div v-if="dialogPage === 2">
+                        <p v-if="isActiveVdo" class="custom-font">
+                          ຖ້າທ່ານປິດວີດີໂອ,
+                          ຜູ້ໃຊ້ງານຄົນອື່ນໆຈະບໍ່ສາມາດເຫັນຂໍ້ມູນ ເເລະ
+                          ວີດີໂອນີ້ໄດ້. ທ່ານຕ້ອງການປິດຂາຍ ຫຼື ບໍ?
+                        </p>
+                        <p v-else class="custom-font">
+                          ຖ້າທ່ານເປິດວີດີໂອ,
+                          ຂໍ້ມູນທັງໝົດຂອງວີດີໂອນີ້ຈະຖືກເປິດໃຫ້ຜູ້ໃຊ້ເຂົ້າເບີ່ງໄດ້.<span
+                            style="color: #ff3300"
+                            >!</span
+                          >. ທ່ານຕ້ອງການລົບວີດີໂອນີ້ ຫຼື ບໍ?
+                        </p>
+                      </div>
+                      <div v-else>
+                        <p class="custom-font">
+                          ຖ້າທ່ານລົບວີດີໂອ,
+                          ຂໍ້ມູນທັງໝົດຂອງວີດີໂອນີ້ຈະຖືກລົບອອກຈາກຖານຂໍ້ມູນ<span
+                            style="color: #ff3300"
+                            >!</span
+                          >. ທ່ານຕ້ອງການລົບວີດີໂອນີ້ ຫຼື ບໍ?
+                        </p>
+                      </div>
+                    </v-card>
+                  </div>
+                  <template #footer>
+                    <div v-if="dialogPage === 2">
+                      <Button
+                        v-if="isActiveVdo"
+                        size="large"
+                        long
+                        style="background-color: #ff3300; color: #ffff"
+                        @click="activeVideo(idVideo, 0)"
+                      >
+                        <v-icon color="#ffff">{{
+                          'mdi-play-box-lock-outline'
+                        }}</v-icon
+                        >&nbsp;
+                        <span class="custom-font">{{ 'ປິດວີດີໂອ!' }}</span>
+                      </Button>
+                      <Button
+                        v-else
+                        size="large"
+                        long
+                        style="background-color: #33cc33; color: #ffff"
+                        @click="activeVideo(idVideo, 1)"
+                      >
+                        <v-icon color="#ffff">{{
+                          'mdi-play-box-lock-open'
+                        }}</v-icon
+                        >&nbsp;
+                        <span class="custom-font">{{ 'ເປິດວີດີໂອ' }}</span>
+                      </Button>
+                    </div>
+                    <Button
+                      v-else
+                      size="large"
+                      long
+                      style="background-color: #ff3300; color: #ffff"
+                      @click="deleteVideo(idVideo)"
+                    >
+                      <v-icon color="#ffff">mdi-delete-empty</v-icon>&nbsp;
+                      <span class="custom-font">ລົບວີດີໂອ</span>
+                    </Button>
+                  </template>
+                </Modal>
                 <v-card-actions
                   v-if="tabItem !== filteredType.length"
                   class="pa-0"
@@ -879,14 +988,13 @@ export default {
       NumberPage: 25,
       searchvideo: false,
       modal: false,
-      modalactive: false,
-      disabledMenu: false,
       select: false,
       dialogPage: -1,
       loading: false,
       SeriesMovie: 0,
       search: '',
       idVideo: '',
+      isActiveVdo: false,
       name: '',
       isHovered: false,
       video: [],
@@ -895,7 +1003,12 @@ export default {
       itemsMenu: [
         { title: 'ຄວາມລະອຽດ', icon: 'mdi-movie-open-plus' },
         { title: 'ເເກ້ໄຂ', icon: 'mdi-movie-edit' },
-        { title: 'ປິດຂາຍ', icon: 'mdi-movie-off' },
+        {
+          title: 'ປິດວີດີໂອ',
+          icon: 'mdi-movie-off',
+          title1: 'ເປິດວີດີໂອ',
+          icon1: 'mdi-movie-check',
+        },
         { title: 'ລົບວີດີໂອ', icon: 'mdi-delete' },
       ],
       videosearch: [],
@@ -960,8 +1073,6 @@ export default {
             }
           )
           this.videosearch = response.data.detail.data || []
-          // console.log('Search-response:', this.videosearch)
-          // console.log('video:',this.video)
         } catch (error) {
           console.error('Error fetching data:', error)
         }
@@ -971,8 +1082,7 @@ export default {
       this.loading = false
     },
     selectMenu(active, menu, videoDetails) {
-      const { id, title, type } = videoDetails
-      // console.log('data-::',this.video)
+      const { id, title, type, isActive } = videoDetails
       if (menu === 0) {
         this.SeriesMovie = type
         this.name = title
@@ -984,13 +1094,11 @@ export default {
         this.$store.commit('SET_STEP_RightDrawer', true)
       } else if (menu === 2) {
         this.idVideo = id
-        this.modalactive = true
         this.modal = true
-        // console.log(id);
+        this.isActiveVdo = isActive
         this.$store.commit('SET_STEP_RightDrawer', false)
       } else if (menu === 3) {
         this.idVideo = id
-        this.modalactive = false
         this.modal = true
         this.$store.commit('SET_STEP_RightDrawer', false)
       } else if (menu === 9) {
@@ -1000,7 +1108,7 @@ export default {
       } else {
         this.closePost()
       }
-      this.dialogPage = this.dialogPage === menu ? -1 : menu
+      this.dialogPage = this.dialogPage === menu && menu !== 2 ? -1 : menu
     },
     closePost() {
       this.handleMenuItemClick(true)
@@ -1024,11 +1132,30 @@ export default {
         ? this.messageModal('success', false)
         : this.messageModal('error', false)
     },
-    activeVideo(id) {
-      this.modal = false
-      id === '1234'
-        ? this.messageModal('success', false)
-        : this.messageModal('error', false)
+    async activeVideo(id, active) {
+      try {
+        await this.$axios.post(
+          'http://172.28.17.102:2024/video/updateIsActive',
+          {
+            videoId: id,
+            isActive: active,
+          }
+        )
+        if (active === 1) {
+          this.messageModal('success', 'ເປິດວີດີໂອສໍາເລັດ.')
+        } else {
+          this.messageModal('warning', 'ປິດວີດີໂອສໍາເລັດ.')
+        }
+      } catch (error) {
+        console.error('Error fetching videos by type:', error)
+        this.messageModal(
+          'error',
+          active === 1 ? 'ເປິດວີດີໂອສໍາເລັດ!.' : 'ປິດວີດີໂອບໍ່ສໍາເລັດ!'
+        )
+      } finally {
+        this.modal = false
+        this.filterMoviesByType()
+      }
     },
     handlePageUpdate(page) {
       this.currentPage = page
@@ -1061,25 +1188,20 @@ export default {
           }
         )
         this.video = response.data.detail?.data || []
-        console.log('video ::', this.video)
+        // console.log('video ::', this.video)
       } catch (error) {
         console.error('Error fetching videos by type:', error)
       }
     },
+    truncatedName(value, num) {
+      if (value.length > num) {
+        return value.slice(0, num) + ' ...'
+      }
+      return value
+    },
     messageModal(type, value) {
       const getMessageContent = () => {
-        const successMessage = this.modalactive
-          ? 'ປິດວີດີໂອສໍາເລັດ.'
-          : 'ລົບວີດີໂອສໍາເລັດ.'
-        const errorMessage = this.modalactive
-          ? 'ປິດວີດີໂອບໍ່ສໍາເລັດ.'
-          : 'ລົບວີດີໂອບໍ່ສໍາເລັດ.'
-
-        if (type === 'success') {
-          return value || successMessage
-        } else {
-          return value || errorMessage
-        }
+        return value
       }
       this.$Message[type]({
         background: true,

@@ -426,7 +426,7 @@
           <TabPane
             v-for="(itemType, id) in videonew"
             :key="id"
-            :label="itemType.quality"
+            :label="String(id + 1)"
             class="custom-font border-solis"
             style="
               margin-top: -16px;
@@ -434,7 +434,244 @@
               border: 0px solid #ffff;
             "
           >
-            <v-card-text class="pa-6 pb-6">
+            <v-card-text
+              v-if="form.type === 504405213"
+              class="pa-0 pb-2 grey lighten-5"
+            >
+              <v-card flat class="rounded-0 grey lighten-4 text-center">
+                <h4 class="custom-font">ຂໍ້ມູນຂອງຊີລີ່</h4>
+              </v-card>
+              <v-card
+                outlined
+                class="mb-1 pa-3 rounded-0 grey lighten-5 overflow-y-auto"
+              >
+                <h4 class="custom-font" style="text-decoration: underline">
+                  ຊື່ວີດີໂອ
+                </h4>
+                <h4>
+                  <Input
+                    v-model="itemType.name"
+                    placeholder="ຊື່ວີດີໂອ..."
+                    clearable
+                    class="mt-2 custom-font"
+                  />
+                </h4>
+                <br />
+                <h4 class="custom-font" style="text-decoration: underline">
+                  ລາຍລະອຽດ
+                </h4>
+                <quill-editor
+                  v-model="itemType.description"
+                  :options="editorOptions"
+                  class="mt-2 custom-quill-editor"
+                  style="background-color: #ffff"
+                ></quill-editor>
+                <br />
+                <v-card outlined class="rounded-0 pa-3 pb-0 text-center">
+                  <v-img
+                    :src="
+                      itemType.imageVideo && itemType.imageVideo !== null
+                        ? playURL(itemType.image)
+                        : `https://apicenter.laotel.com:9443/tplussocial?img=${itemType.img}`
+                    "
+                    class="text-right"
+                    style="
+                      border: 1px solid #a6a6a6;
+                      border-radius: 8px;
+                      height: 234px;
+                      width: 100%;
+                      flex: 0 0 auto;
+                    "
+                  >
+                    <Upload
+                      action="//jsonplaceholder.typicode.com/posts/"
+                      :before-upload="(file) => handleImageVideo(file, id)"
+                    >
+                      <v-btn class="close-btn px-1" small>
+                        ແກ້ໄຂ
+                        <span>
+                          <v-icon size="12">mdi-pencil-outline</v-icon>
+                        </span>
+                      </v-btn>
+                    </Upload>
+                  </v-img>
+                  <p class="custom-font color-text-load">ຮູບພາບຊີລີ່</p>
+                </v-card>
+              </v-card>
+              <v-card flat class="rounded-0 grey lighten-5 text-center">
+                <h4 class="custom-font">ວິດີໂອຂອງຊີລີ່</h4>
+              </v-card>
+              <v-card
+                outlined
+                class="mb-1 mx-3 rounded-0 overflow-y-auto"
+                min-height="240px"
+                max-height="280"
+              >
+                <div
+                  v-for="(item, index) in itemType.videoSeriesQualityInfo"
+                  :key="index"
+                >
+                  <div class="px-3">
+                    <v-card flat class="custom-p px-2 py-1">
+                      <span v-if="item && item.quality">
+                        {{ item.quality }}p
+                      </span>
+                      <v-divider color="#FFFF" />
+                    </v-card>
+                    <v-card-actions class="pa-0">
+                      <div class="text-center">
+                        <div
+                          class="pa-0"
+                          style="
+                            position: relative;
+                            height: 130px;
+                            width: 260px;
+                          "
+                        >
+                          <video
+                            :src="
+                              item.video && item.video !== null
+                                ? playURL(item.video)
+                                : `https://apicenter.laotel.com:9443/tplussocial/VideoStreaming?v=${item.filename}`
+                            "
+                            controls
+                            height="130"
+                            style="
+                              width: 260px;
+                              border-radius: 2px;
+                              border-top-left-radius: 0px;
+                              border-top-right-radius: 0px;
+                              border: 0px solid rgb(166, 166, 166);
+                              background-color: #000;
+                            "
+                          ></video>
+                          <div
+                            style="
+                              position: absolute;
+                              top: 0.4px;
+                              right: 0.4px;
+                              border-top-right-radius: 1px;
+                            "
+                          >
+                            <Upload
+                              action="//jsonplaceholder.typicode.com/posts/"
+                              :before-upload="
+                                (file) => uploadSeries(file, id, index)
+                              "
+                            >
+                              <v-btn
+                                class="close-btn px-1"
+                                small
+                                style="border-top-right-radius: 1px"
+                              >
+                                ແກ້ໄຂ
+                                <span
+                                  ><v-icon size="12"
+                                    >mdi-pencil-outline</v-icon
+                                  ></span
+                                >
+                              </v-btn>
+                            </Upload>
+                          </div>
+                        </div>
+                        <p class="custom-font color-text-load">ວິດິໂອ</p>
+                      </div>
+                      <v-spacer />
+                      <div
+                        v-if="item.video !== null && item.imageVideo === null"
+                        style="
+                          background-color: #ffff;
+                          width: 244px;
+                          height: 130px;
+                          border-radius: 8px;
+                          margin-top: -10px;
+                        "
+                      >
+                        <div class="pa-0 px-3">
+                          <Upload
+                            type="drag"
+                            action="//jsonplaceholder.typicode.com/posts/"
+                            style="width: 224px; height: 110px;"
+                            :before-upload="
+                              (file) => uploadImageSeries(file, id, index)
+                            "
+                          >
+                            <div style="padding: 10px 0px; height: 110px; background-color: rgb(246, 246, 246);">
+                              <Icon
+                                type="md-images"
+                                size="52"
+                                style="color: rgb(255, 215, 0)"
+                              />
+                              <p class="custom-font color-text-load">
+                                ຮູບພາບວິດິໂອ
+                              </p>
+                            </div>
+                          </Upload>
+                        </div>
+                      </div>
+                      <div v-else class="text-center">
+                        <v-img
+                          :src="
+                            item.imageVideo && item.imageVideo !== null
+                              ? playURL(item.imageVideo)
+                              : `https://apicenter.laotel.com:9443/tplussocial?img=${item.thumbnail}`
+                          "
+                          class="text-right"
+                          style="
+                            width: 244px;
+                            height: 130px;
+                            border-radius: 2px;
+                            border-top-right-radius: 0px;
+                            border-top-left-radius: 0px;
+                            border: 1px solid #333333;
+                          "
+                        >
+                          <Upload
+                            action="//jsonplaceholder.typicode.com/posts/"
+                            :before-upload="
+                              (file) => uploadImageSeries(file, id, index)
+                            "
+                          >
+                            <v-btn
+                              class="close-btn px-1"
+                              small
+                              style="border-top-right-radius: 0px"
+                            >
+                              ແກ້ໄຂ<span
+                                ><v-icon size="12"
+                                  >mdi-pencil-outline</v-icon
+                                ></span
+                              >
+                            </v-btn>
+                          </Upload>
+                        </v-img>
+                        <p class="custom-font color-text-load">ຮູບພາບວິດິໂອ</p>
+                      </div>
+                    </v-card-actions>
+                  </div>
+                  <v-divider
+                    v-if="itemType.videoSeriesQualityInfo.length >= 2"
+                  />
+                </div>
+              </v-card>
+              <v-card-actions class="pa-0 mt-4">
+                <v-spacer />
+                <v-btn
+                  small
+                  elevation="0"
+                  class="mx-3 pr-1 save-btn"
+                  @click="setSeries(itemType)"
+                >
+                  <v-icon class="pt-1 mb-1 mr-1" size="18">{{
+                    !itemType
+                      ? 'mdi-check-bold'
+                      : 'mdi-content-save-all-outline'
+                  }}</v-icon>
+                  <h4 class="mr-1">ບັນທືກ</h4>
+                </v-btn>
+              </v-card-actions>
+            </v-card-text>
+            <v-card-text v-else class="pa-6 pb-6">
               <v-row>
                 <v-col cols="6">
                   <v-card
@@ -470,7 +707,7 @@
                     >
                       <Upload
                         action="//jsonplaceholder.typicode.com/posts/"
-                        :before-upload="(file) => uploadVideo(file, id)"
+                        :before-upload="(file) => uploadVideo(file, index)"
                       >
                         <v-btn
                           class="close-btn px-1"
@@ -575,13 +812,13 @@ export default {
   name: 'PostPage',
   data() {
     return {
-      value_p: 0,
       imageview: [],
       newimageview: [],
+      e1: 1,
+      epDes: null,
       editType: false,
-      loading: false,
-      isHovered: false,
       videonew: [],
+      videoSeries: [],
       itemsType: [],
       localFormUpdate: { ...this.$store.state.form },
       category: [],
@@ -649,7 +886,7 @@ export default {
   },
   methods: {
     async dataResponseAll() {
-      console.log('Fetching data for form update...')
+      // console.log('Fetching data for form update...', this.form)
       const apiCalls = [
         this.$axios.post('http://172.28.17.102:2024/video/getallvideotype'),
         this.$axios.post('http://172.28.17.102:2024/video/getallvideocategory'),
@@ -661,8 +898,12 @@ export default {
         this.itemsType = videoType.data.detail
         this.category = videocategory.data.detail
         this.qualityIdGet = JSON.parse(JSON.stringify(qualityId.data.detail))
-        const video = this.$store.state.form.video || []
-        if (video.length > 0 && this.qualityIdGet) {
+        const video = this.form.video || []
+        if (
+          video.length > 0 &&
+          this.qualityIdGet &&
+          this.form.type !== 504405213
+        ) {
           this.videonew = video.map((item, index) => {
             const matchingQuality = this.qualityIdGet.find(
               (q) => q.quality === item.videoQualitydata.quality
@@ -678,6 +919,32 @@ export default {
               index,
             }
           })
+        } else {
+          console.log('localFrom::', this.localFormUpdate)
+          console.log('video::', video)
+          this.videonew = video.map((item) => ({
+            SVideoId: item.SVideoId,
+            videoId: item.videoId,
+            name: item.name,
+            img: item.img,
+            image: null,
+            description: item.description,
+            videoSeriesQualityInfo: item.videoSeriesQualityInfo.map((items) => {
+              const matchingQuality = this.qualityIdGet.find(
+                (q) => q.quality === items.SVideoQualityInfoData.quality
+              )
+              return {
+                filename: items.filename,
+                imageVideo: null,
+                video: null,
+                thumbnail: items.thumbnail,
+                quality: items.SVideoQualityInfoData.quality,
+                qualityid: matchingQuality ? matchingQuality.qualityId : 0,
+                activeVideo: false,
+              }
+            }),
+          }))
+          console.log('videoSeries::', this.videonew)
         }
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -692,6 +959,36 @@ export default {
     },
     addType() {
       this.editType = !this.editType
+    },
+    setSeries(value) {
+      this.videoSeries = this.videoSeries.filter(
+        (item) => item.SVideoId !== value.SVideoId
+      )
+      const filteredQualityInfo = value.videoSeriesQualityInfo.filter(
+        (q) => q.activeVideo === true
+      )
+      this.videoSeries.push({
+        ...value,
+        videoSeriesQualityInfo: filteredQualityInfo,
+      })
+      if (this.videoSeries.length > 0) {
+        const invalidVideo = this.videoSeries.find((series) =>
+          series.videoSeriesQualityInfo.some(
+            (video) => video.video && video.imageVideo === null
+          )
+        )
+        if (invalidVideo) {
+          const invalidQuality = invalidVideo.videoSeriesQualityInfo.find(
+            (video) => video.video && video.imageVideo === null
+          )?.quality
+          this.messageModal(
+            'warning',
+            `ບັນທືກບໍ່ໄດ້. ວີດີໂອທີ່ມີ quality ${invalidQuality} ບໍ່ມິຮູບວີດີໂອ`
+          )
+          return invalidVideo
+        }
+      }
+      console.log('KK::', this.videoSeries)
     },
     handleMenuItemClick(id, title, image, des, price, type, bkimage) {
       const updatedForm = {
@@ -756,6 +1053,47 @@ export default {
       }
       return false
     },
+    uploadImageSeries(file, id, index) {
+      if (file && index !== undefined && index !== null) {
+        this.$set(
+          this.videonew[id].videoSeriesQualityInfo[index],
+          'imageVideo',
+          file
+        )
+        this.$set(
+          this.videonew[id].videoSeriesQualityInfo[index],
+          'activeVideo',
+          true
+        )
+      } else {
+        console.warn('Invalid file or index:', { file, index })
+      }
+      return false
+    },
+    uploadSeries(file, id, index) {
+      if (file && index !== undefined && index !== null) {
+        this.$set(
+          this.videonew[id].videoSeriesQualityInfo[index],
+          'video',
+          file
+        )
+        this.$set(
+          this.videonew[id].videoSeriesQualityInfo[index],
+          'activeVideo',
+          true
+        )
+        console.warn(
+          'Invalid file or index:',
+          this.videonew[id].videoSeriesQualityInfo[index]
+        )
+      } else {
+        console.warn('Invalid file or index:', { file, index })
+      }
+      return false
+    },
+    handleImageVideo(file, id) {
+      this.$set(this.videonew[id], 'image', file)
+    },
     playURL(file) {
       if (file instanceof Blob || file instanceof File) {
         try {
@@ -786,7 +1124,7 @@ export default {
       const { id, title, des, type, bkimage, image, category } =
         this.localFormUpdate
       let UpdateVideos = []
-      if (this.videonew.length > 0) {
+      if (this.videonew.length > 0 && this.form.type === 504405213) {
         UpdateVideos = this.videonew.filter((video) => video.active === true)
         if (UpdateVideos.length > 0) {
           const invalidVideo = UpdateVideos.find(
@@ -800,7 +1138,7 @@ export default {
             return
           }
         }
-        console.log('UpdateVideos::', UpdateVideos)
+        console.log('Update+::', UpdateVideos)
       }
       if (!id || !title || !des || !type) {
         this.messageModal(
@@ -852,11 +1190,11 @@ export default {
       }
       // if (this.localFormUpdate !== null) {
       //   // this.$store.commit('SET_STEP_RightDrawer', false)
-      //   console.log('Check!')
+      //   console.log('Check!', this.videonew)
       //   return
       // }
       try {
-        const response = await this.$axios.post(
+        await this.$axios.post(
           'http://172.28.17.102:2024/video/updatevideo',
           formData,
           {
@@ -865,7 +1203,6 @@ export default {
             },
           }
         )
-        console.log(response)
         this.typeofID = type
         if (this.newimageview.length > 0) {
           const formData = new FormData()
@@ -884,6 +1221,7 @@ export default {
           )
           console.log('Additional details added successfully:', responseView)
         }
+        // Update video of movies and video Story
         if (UpdateVideos.length > 0) {
           for (const [index, numero] of UpdateVideos.entries()) {
             const formData = new FormData()
@@ -920,6 +1258,81 @@ export default {
             }
           }
         }
+        // Update video of Series
+        if (this.form.type === 504405213) {
+          for (const [index, numero] of this.videoSeries.entries()) {
+            console.log('data::', numero)
+            const formData = new FormData()
+            formData.append('img', numero.image ? numero.image : '')
+            formData.append('SVideoId', numero.SVideoId)
+            formData.append('videoId', numero.videoId)
+            formData.append('oldImg', numero.img)
+            const videoData = JSON.stringify({
+              name: numero.name || '',
+              description: numero.description || '',
+            })
+            formData.append('videoData', videoData)
+            try {
+              const responseView = await this.$axios.post(
+                'http://172.28.17.102:2024/video/updateVideoSeries',
+                formData,
+                {
+                  headers: {
+                    'Content-Type': 'multipart/form-data',
+                  },
+                }
+              )
+              console.log(responseView.data)
+              if (index < this.videoSeries.length - 1) {
+                const fixedDelay = 200
+                await new Promise((resolve) => setTimeout(resolve, fixedDelay))
+              }
+              const qualityInfo = JSON.parse(
+                JSON.stringify(numero.videoSeriesQualityInfo)
+              )
+              for (const [index, itemnumero] of qualityInfo.entries()) {
+                const formData = new FormData()
+                formData.append('name', itemnumero.video)
+                formData.append('Oldname', itemnumero.filename)
+                formData.append('oldSVideoId', numero.SVideoId)
+                formData.append('oldqualityId', itemnumero.qualityid)
+                formData.append('thumbnail', itemnumero.imageVideo)
+                formData.append('Oldthumbnail', itemnumero.thumbnail)
+                const videoData = JSON.stringify({
+                  qualityId: itemnumero.qualityid || '',
+                  SVideoId: numero.SVideoId || '',
+                })
+                formData.append('videoData', videoData)
+                try {
+                  const responseView = await this.$axios.post(
+                    'http://172.28.17.102:2024/video/updateVideoSeriesQualityInfo',
+                    formData,
+                    {
+                      headers: {
+                        'Content-Type': 'multipart/form-data',
+                      },
+                    }
+                  )
+                  console.log(responseView.data)
+                  if (index < qualityInfo.length - 1) {
+                    const fixedDelay = 200
+                    await new Promise((resolve) =>
+                      setTimeout(resolve, fixedDelay)
+                    )
+                  }
+                } catch (error) {
+                  console.error('Error sending message to:', itemnumero, error)
+                  this.messageModal('error', error)
+                  continue
+                }
+              }
+            } catch (error) {
+              console.error('Error sending message to:', numero, error)
+              this.messageModal('error', error)
+              continue
+            }
+          }
+        }
         this.$store.commit('SET_STEP_RightDrawer', false)
         this.messageModal('success', 'ແກ້ໄຂ້ຂໍ້ມູນສຳເລັດ.')
       } catch (error) {
@@ -927,6 +1340,9 @@ export default {
           'Error fetching data:',
           error.response ? error.response.data : error.message
         )
+      } finally {
+        this.newimageview = []
+        this.videoSeries = []
       }
     },
     messageModal(type, conten) {
@@ -1065,5 +1481,30 @@ export default {
 
 .custom-quill-editor .ql-editor p {
   line-height: 1.6;
+}
+.custom-stepper {
+  border-width: 0px 1px 1px 1px;
+  border-style: solid;
+  border-color: #d9d9d9;
+}
+.custom-p {
+  width: 100%;
+  border-top-right-radius: 2px;
+  border-top-left-radius: 2px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  background-color: #333333;
+  color: #ffff;
+  text-align: center;
+}
+.save-btn {
+  background-color: #ffd11a !important;
+  color: white !important;
+  transition: background-color 0.3s ease;
+}
+
+.save-btn:hover {
+  background-color: #ffd11a !important;
+  color: black !important;
 }
 </style>
