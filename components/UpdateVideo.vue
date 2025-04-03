@@ -591,12 +591,18 @@
                           <Upload
                             type="drag"
                             action="//jsonplaceholder.typicode.com/posts/"
-                            style="width: 224px; height: 110px;"
+                            style="width: 224px; height: 110px"
                             :before-upload="
                               (file) => uploadImageSeries(file, id, index)
                             "
                           >
-                            <div style="padding: 10px 0px; height: 110px; background-color: rgb(246, 246, 246);">
+                            <div
+                              style="
+                                padding: 10px 0px;
+                                height: 110px;
+                                background-color: rgb(246, 246, 246);
+                              "
+                            >
                               <Icon
                                 type="md-images"
                                 size="52"
@@ -988,7 +994,7 @@ export default {
           return invalidVideo
         }
       }
-      console.log('KK::', this.videoSeries)
+      // console.log('KK::', this.videoSeries)
     },
     handleMenuItemClick(id, title, image, des, price, type, bkimage) {
       const updatedForm = {
@@ -1138,7 +1144,7 @@ export default {
             return
           }
         }
-        console.log('Update+::', UpdateVideos)
+        // console.log('Update+::', UpdateVideos)
       }
       if (!id || !title || !des || !type) {
         this.messageModal(
@@ -1237,7 +1243,7 @@ export default {
             })
             formData.append('videoData', videoData)
             try {
-              const responseView = await this.$axios.post(
+              await this.$axios.post(
                 'http://172.28.17.102:2024/video/updatevideoqualityinfo',
                 formData,
                 {
@@ -1246,7 +1252,6 @@ export default {
                   },
                 }
               )
-              console.log(responseView.data)
               if (index < UpdateVideos.length - 1) {
                 const fixedDelay = 200
                 await new Promise((resolve) => setTimeout(resolve, fixedDelay))
@@ -1261,7 +1266,6 @@ export default {
         // Update video of Series
         if (this.form.type === 504405213) {
           for (const [index, numero] of this.videoSeries.entries()) {
-            console.log('data::', numero)
             const formData = new FormData()
             formData.append('img', numero.image ? numero.image : '')
             formData.append('SVideoId', numero.SVideoId)
@@ -1273,7 +1277,7 @@ export default {
             })
             formData.append('videoData', videoData)
             try {
-              const responseView = await this.$axios.post(
+              await this.$axios.post(
                 'http://172.28.17.102:2024/video/updateVideoSeries',
                 formData,
                 {
@@ -1282,7 +1286,6 @@ export default {
                   },
                 }
               )
-              console.log(responseView.data)
               if (index < this.videoSeries.length - 1) {
                 const fixedDelay = 200
                 await new Promise((resolve) => setTimeout(resolve, fixedDelay))
@@ -1304,7 +1307,7 @@ export default {
                 })
                 formData.append('videoData', videoData)
                 try {
-                  const responseView = await this.$axios.post(
+                  await this.$axios.post(
                     'http://172.28.17.102:2024/video/updateVideoSeriesQualityInfo',
                     formData,
                     {
@@ -1313,7 +1316,6 @@ export default {
                       },
                     }
                   )
-                  console.log(responseView.data)
                   if (index < qualityInfo.length - 1) {
                     const fixedDelay = 200
                     await new Promise((resolve) =>
